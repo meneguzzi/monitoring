@@ -1,8 +1,7 @@
 import pygraphviz as pgv
 
 from itertools import chain, combinations, permutations, product
-from structures.state import State
-from structures.action import Action
+from structures.domain import State, Action
 
 
 def powerset(iterable):
