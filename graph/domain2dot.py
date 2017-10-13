@@ -21,7 +21,7 @@ def generate_graph(ops):
         G.add_node(repr(state),key=repr(state))
 
     for s1,s2 in product(states,repeat=2):
-        print str(s1) + " to " + str(s2)
+        print str(s1) + " to " + str(s2) 
         for op in ops:
             # print str(op)+ " is "+("not" if not op.applicable(s1) else "")+" applicable to "+str(s2)
             if op.applicable(s1) and op.result(s1) == s2:

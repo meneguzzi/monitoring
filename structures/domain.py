@@ -54,7 +54,6 @@ class Action:
         if(self.applicable(state)):
             s2 = deepcopy(state)
             s2 = s2 - State(self.delList)
-            # print State(self.addList)
             s2 = s2 + State(self.addList)
             return s2
         else:
@@ -146,13 +145,8 @@ class State():
 
 if __name__ == '__main__':
     s = State(['p','q'])
-    print s
 
     s1 = State(['p','q'])
     s2 = State(['p','q'])
     s3 = State(['q'])
 
-    print s1 == s2
-    print s1 == s3
-    print s3 == s1
-    print s1.models(s2)

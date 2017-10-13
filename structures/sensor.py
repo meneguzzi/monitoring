@@ -21,6 +21,8 @@ class Sensor():
         if(self.op != None and self.op not in self.valid_ops and not isinstance(self.op, int)):
             raise Exception("Invalid op "+ self.op)
 
+
+
     @property
     def lhs(self):
         return self.lhs
@@ -64,6 +66,15 @@ class Sensor():
 
 true = Sensor(True)
 
+def sand(s1,s2):
+    return Sensor(s1,"^",s2)
+
+def sor(s1,s2):
+    return Sensor(s1,"v",s2)
+
+def snot(s1):
+    return Sensor(s1,"-")
+
 def models(sigma, t, s, A):
     # assert isinstance(sigma, Sensor)
     # assert isinstance(t, structures.domain.Trace)
@@ -72,7 +83,7 @@ def models(sigma, t, s, A):
     if sigma.is_atom():
         return sigma.lhs is True or sigma.lhs in s
     elif sigma.is_negated():
-        return sigma.lhr not in s
+        return sigma.lhs not in s
     else:
         if sigma.op == sigma.land:
             return models(sigma.lhs, t, s, A) and models(sigma.rhs, t, s, A)
