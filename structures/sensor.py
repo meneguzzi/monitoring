@@ -76,7 +76,7 @@ def snot(s1):
     return Sensor(s1,"-")
 
 def spath(i,s1,s2):
-    assert isInstance(i,int)
+    assert isinstance(i,int)
     return Sensor(s1,i,s2)
 
 def models(sigma, t, s, A):
