@@ -3,14 +3,11 @@ import pygraphviz as pgv
 from itertools import chain, combinations, permutations, product
 from structures.domain import State, Action
 
-
-def powerset(iterable):
-    s = list(iterable)
-    return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
+from structures.domain import powerset
 
 
 def generate_state_space(ops):
-    allFacts = set([fact for op in ops for fact in op.allFacts()])
+    allFacts = set([fact for op in ops for fact in op.all_facts()])
     # for op in ops:
     #     allFacts += op.allFacts()
     return powerset(allFacts)

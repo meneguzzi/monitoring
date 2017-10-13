@@ -1,5 +1,11 @@
 from copy import deepcopy
 from structures.sensor import Sensor
+from itertools import chain, combinations
+
+
+def powerset(iterable):
+    s = list(iterable)
+    return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
 
 
 class Domain():
@@ -8,6 +14,15 @@ class Domain():
         self.actions = {}
         for action in actions:
             self.actions[action.name] = action
+
+    @property
+    def all_facts(self):
+        all_facts = set([fact for op in self.actions for fact in op.all_facts()])
+        return all_facts
+
+    def generate_state_space(self):
+        all_facts = self.all_facts()
+        return powerset(all_facts)
 
     def __getitem__(self, item):
         return self.actions[item]
@@ -25,7 +40,7 @@ class Action:
         self.addList = addList
         self.delList = delList
 
-    def allFacts(self):
+    def all_facts(self):
         facts = []
         facts += self.pre
         facts += self.addList
