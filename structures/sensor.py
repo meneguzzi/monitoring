@@ -66,18 +66,23 @@ class Sensor():
 
 true = Sensor(True)
 
+
 def sand(s1,s2):
     return Sensor(s1,"^",s2)
+
 
 def sor(s1,s2):
     return Sensor(s1,"v",s2)
 
+
 def snot(s1):
     return Sensor(s1,"-")
+
 
 def spath(i,s1,s2):
     assert isinstance(i,int)
     return Sensor(s1,i,s2)
+
 
 def models(sigma, t, s, A):
     # assert isinstance(sigma, Sensor)

@@ -7,11 +7,12 @@ from structures.sensor import Sensor
 class MonitoringTestCase(unittest.TestCase):
 
     def domain1(self):
-        return Domain([Action('a', pre=['p'], addList=['q'], delList=[])
-        ,Action('b', pre=['q'], addList=[], delList=['q'])
-        ,Action('c', pre=['q'], addList=['r'], delList=['q'])
-        ,Action('d', pre=['r'], addList=['p'], delList=['q'])
-        ])
+        return Domain([Action('a', [], positive_preconditions=['p'], negative_preconditions=[], add_effects=['q'],
+                              del_effects=[])
+        , Action('b', [], positive_preconditions=['q'], negative_preconditions=[], add_effects=[], del_effects=['q'])
+        , Action('c', [], positive_preconditions=['q'], negative_preconditions=[], add_effects=['r'], del_effects=['q'])
+        , Action('d', [], positive_preconditions=['r'], negative_preconditions=[], add_effects=['p'], del_effects=['q'])
+                       ])
 
     def test_monitoring(self):
         A = self.domain1()

@@ -34,33 +34,50 @@ class Domain():
 class Action:
     # TODO accept propositional PDDL
 
-    def __init__(self,name,pre,addList,delList=[]):
+    def __init__(self, name, parameters, positive_preconditions, negative_preconditions, add_effects, del_effects=[], cost = 0):
         self.name = name
-        self.pre = pre
-        self.addList = addList
-        self.delList = delList
+        self.parameters = parameters
+        self.positive_preconditions = positive_preconditions
+        self.negative_preconditions = negative_preconditions
+        self.add_effects = add_effects
+        self.del_effects = del_effects
+        self.cost=0
 
     def all_facts(self):
         facts = []
-        facts += self.pre
-        facts += self.addList
-        facts += self.delList
+        facts += self.positive_preconditions
+        facts += self.negative_preconditions
+        facts += self.add_effects
+        facts += self.del_effects
         return set(facts)
 
     def applicable(self,state):
-        return state.models(State(self.pre))
+        # return state.models(State(self.positive_preconditions))
+        for i in self.positive_preconditions:
+            if i not in state:
+                return False
+
+        for i in self.negative_preconditions:
+            if i in state:
+                return False
+
+        return True
 
     def result(self,state):
-        if(self.applicable(state)):
+        if self.applicable(state):
             s2 = deepcopy(state)
-            s2 = s2 - State(self.delList)
-            s2 = s2 + State(self.addList)
+            s2 = s2 - State(self.del_effects)
+            s2 = s2 + State(self.add_effects)
             return s2
         else:
             raise ValueError(str(self)+' is not applicable to '+str(state))
 
+    def __eq__(self, other):
+        return self.__dict__ == other.__dict__
+
     def __repr__(self):
-        return "<"+self.name+","+str(self.pre)+","+str(self.delList)+","+str(self.addList)+">"
+        return "<"+self.name+","+str(self.positive_preconditions)+","+str(self.negative_preconditions) + \
+               "," + str(self.del_effects) + "," + str(self.add_effects) + ","+str(self.cost) +  ">"
 
 
 class Trace():
@@ -85,6 +102,7 @@ class Trace():
 
     def __repr__(self):
         return repr(self.trace)
+
 
 class State():
 

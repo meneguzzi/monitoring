@@ -37,16 +37,16 @@ if __name__ == '__main__':
 
     # print generate_state_space([opA,opB])
     G = generate_graph([
-        Action('a', pre=['p'], addList=['q'], delList=[])
-        ,Action('b', pre=['q'], addList=[], delList=['q'])
-        ,Action('c', pre=['q'], addList=['r'], delList=['q'])
-        ,Action('d', pre=['r'], addList=['p'], delList=['q'])
+        Action('a', [], positive_preconditions=['p'], negative_preconditions=[], add_effects=['q'], del_effects=[])
+        , Action('b', [], positive_preconditions=['q'], negative_preconditions=[], add_effects=[], del_effects=['q'])
+        , Action('c', [], positive_preconditions=['q'], negative_preconditions=[], add_effects=['r'], del_effects=['q'])
+        , Action('d', [], positive_preconditions=['r'], negative_preconditions=[], add_effects=['p'], del_effects=['q'])
         ])
     # print G
     G = generate_graph([
-        Action('a', pre=['p'], addList=['q'], delList=[])
-        , Action('b', pre=['q'], addList=['p'], delList=['q'])
-        , Action('c', pre=['q'], addList=[], delList=['q'])
+        Action('a', [], positive_preconditions=['p'], negative_preconditions=[], add_effects=['q'], del_effects=[])
+        , Action('b', [], positive_preconditions=['q'], negative_preconditions=[], add_effects=['p'], del_effects=['q'])
+        , Action('c', [], positive_preconditions=['q'], negative_preconditions=[], add_effects=[], del_effects=['q'])
         # , Action('d', pre=['r'], addList=['p'], delList=['q'])
     ])
     G.write("graph.dot")
