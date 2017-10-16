@@ -9,7 +9,7 @@ from pddl.PDDL import PDDL_Parser
 # Test PDDL
 # ==========================================
 
-class Test_PDDL(unittest.TestCase):
+class PDDL_Test(unittest.TestCase):
 
     # ------------------------------------------
     # Test scan_tokens
