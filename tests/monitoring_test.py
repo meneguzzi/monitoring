@@ -2,7 +2,7 @@ import unittest
 
 from structures.domain import Domain, Action, State, Trace
 from structures.sensor import Sensor
-
+from pddl.PDDL import PDDL_Parser
 
 class MonitoringTestCase(unittest.TestCase):
 
@@ -14,6 +14,13 @@ class MonitoringTestCase(unittest.TestCase):
         , Action('d', [], positive_preconditions=['r'], negative_preconditions=[], add_effects=['p'], del_effects=['q'])
                        ])
 
+    def test_domain1_parse(self):
+        A = self.domain1()
+        parser = PDDL_Parser()
+        parser.parse_domain('../examples/simple/simple.pddl')
+        parser.parse_problem('../examples/simple/pb1.pddl')
+        # self.assertEquals(parser.actions,A.actions)
+
     def test_monitoring(self):
         A = self.domain1()
         t1 = Trace([A['a'],A['b']])
@@ -23,9 +30,6 @@ class MonitoringTestCase(unittest.TestCase):
 
         sensor = Sensor(Sensor("p"), 1, Sensor("q"))
         assert (sensor.is_model_of(t1, state, A))
-
-        # self.assertEqual(True, False)
-        pass
 
     def test_sensor(self):
         s = Sensor(Sensor("p"),"v",Sensor("q"))

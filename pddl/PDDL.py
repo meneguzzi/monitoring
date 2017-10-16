@@ -6,6 +6,10 @@ from structures.domain import Action
 
 class PDDL_Parser:
 
+    def __init__(self):
+        self.use_types = False
+        self.use_strips = True
+
     # ------------------------------------------
     # Tokens
     # ------------------------------------------

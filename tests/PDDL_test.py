@@ -84,5 +84,16 @@ class PDDL_Test(unittest.TestCase):
     # Split propositions
     #-------------------------------------------
 
+    def test_parse_first_order(self):
+        parser = PDDL_Parser()
+        parser.parse_domain('../examples/dwr/dwr.pddl')
+        parser.parse_problem('../examples/dwr/pb1.pddl')
+        self.assertEqual(parser.problem_name, 'pb1')
+        # self.assertEqual(parser.objects, ['r1','l1','l2','k1','k2','p1','q1','p2','q2','ca','cb','cc','cd','ce','cf', 'pallet'])
+        print parser.actions
+        # self.assertEqual(parser.state, [['garbage'], ['clean'], ['quiet']])
+        # self.assertEqual(parser.positive_goals, [['dinner'], ['present']])
+        # self.assertEqual(parser.negative_goals, [['garbage']])
+
 if __name__ == '__main__':
     unittest.main()
