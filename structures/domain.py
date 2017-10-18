@@ -17,12 +17,14 @@ class Domain():
 
     @property
     def all_facts(self):
-        all_facts = set([fact for op in self.actions for fact in op.all_facts()])
+        all_facts = set([fact for op in self.actions.values() for fact in op.all_facts()])
         return all_facts
 
     def generate_state_space(self):
-        all_facts = self.all_facts()
-        return powerset(all_facts)
+        return powerset(self.all_facts)
+
+    def groundify(self):
+        return Domain([action.groundify() for action in self.actions.values()])
 
     def __getitem__(self, item):
         return self.actions[item]
@@ -45,6 +47,11 @@ class Action:
 
     def all_facts(self):
         facts = []
+        # TODO we need to change this to separate ground from lifted operators, now I'm assuming it's propositional
+        # facts += [str(prop) for prop in self.positive_preconditions]
+        # facts += [str(prop) for prop in self.negative_preconditions]
+        # facts += [str(prop) for prop in self.add_effects]
+        # facts += [str(prop) for prop in self.del_effects]
         facts += self.positive_preconditions
         facts += self.negative_preconditions
         facts += self.add_effects
@@ -71,6 +78,14 @@ class Action:
             return s2
         else:
             raise ValueError(str(self)+' is not applicable to '+str(state))
+
+    def groundify(self):
+        return Action(self.name,tuple(self.parameters),
+                      [tuple(fact) for fact in self.positive_preconditions],
+                      [tuple(fact) for fact in self.negative_preconditions],
+                      [tuple(fact) for fact in self.add_effects],
+                      [tuple(fact) for fact in self.del_effects] if self.del_effects is not None else None,
+                      self.cost)
 
     def __eq__(self, other):
         return self.__dict__ == other.__dict__
