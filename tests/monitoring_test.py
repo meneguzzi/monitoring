@@ -1,7 +1,7 @@
 import unittest
 
 from structures.domain import Domain, Action, State, Trace
-from structures.sensor import Sensor
+from structures.sensor import Sensor, Sensor_Parser
 from pddl.PDDL import PDDL_Parser
 
 class MonitoringTestCase(unittest.TestCase):
@@ -34,6 +34,15 @@ class MonitoringTestCase(unittest.TestCase):
     def test_sensor(self):
         s = Sensor(Sensor("p"),"v",Sensor("q"))
         assert(s != None)
+        parser = Sensor_Parser()
+        s2 = parser.parse_sensor("(p v q)")
+        print s2
+
+        s = parser.parse_sensor("(p [1] q)")
+        print s
+
+        s = parser.parse_sensor("((p v q) [1] q)")
+        print s
 
 
 
