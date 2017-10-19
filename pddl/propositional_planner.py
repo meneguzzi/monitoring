@@ -6,20 +6,24 @@ from pddl.PDDL import PDDL_Parser
 
 class Propositional_Planner:
 
+    def solve(self,domainfile, problemfile):
+        # Parser
+        parser = PDDL_Parser()
+        parser.parse_domain(domainfile)
+        parser.parse_problem(problemfile)
+        return self.solve(parser.actions,parser.state,(parser.positive_goals,parser.negative_goals))
+
     #-----------------------------------------------
     # Solve
     #-----------------------------------------------
 
-    def solve(self, domain, problem):
-        # Parser
-        parser = PDDL_Parser()
-        parser.parse_domain(domain)
-        parser.parse_problem(problem)
+    def solve(self, domain,initial_state,goal_state):
+
         # Parsed data
-        actions = parser.actions
-        state = parser.state
-        goal_pos = parser.positive_goals
-        goal_not = parser.negative_goals
+        actions = domain
+        state = initial_state
+        goal_pos = goal_state[0]
+        goal_not = goal_state[1]
         # Do nothing
         if self.applicable(state, goal_pos, goal_not):
             return []

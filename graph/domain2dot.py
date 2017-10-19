@@ -24,7 +24,7 @@ def generate_graph(domain):
     for s1,s2 in product(states,repeat=2):
         # print str(s1) + " to " + str(s2)
         for op in domain.actions.values():
-            # print str(op)+ " is "+("not" if not op.applicable(s1) else "")+" applicable to "+str(s2)
+            #print str(op)+ " is "+("not" if not op.applicable(s1) else "")+" applicable to "+str(s2)
             if op.applicable(s1) and op.result(s1) == s2:
                 # print "Adding edge from "+str(s1)+" to "+str(s2)
                 G.add_edge(repr(s1),repr(s2),label=op.name)

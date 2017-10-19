@@ -1,4 +1,5 @@
 import structures.domain
+import re
 
 
 class Sensor():
@@ -9,14 +10,17 @@ class Sensor():
     valid_ops = set([neg,lor,land])
 
     def __init__(self,lhs, op = None, rhs = None):
-        if(isinstance(lhs,tuple)):
-            self.lhs = lhs[0]
-            self.rhs = lhs[2]
-            self.op = lhs[1]
-        else:
-            self.lhs = lhs
-            self.rhs = rhs
-            self.op = op
+        # if(isinstance(lhs,tuple)):
+        #     self.lhs = lhs[0]
+        #     self.rhs = lhs[2]
+        #     self.op = lhs[1]
+        # else:
+        #     self.lhs = lhs
+        #     self.rhs = rhs
+        #     self.op = op
+        self.lhs = lhs
+        self.rhs = rhs
+        self.op = op
 
         if(self.op != None and self.op not in self.valid_ops and not isinstance(self.op, int)):
             raise Exception("Invalid op "+ self.op)
@@ -46,7 +50,7 @@ class Sensor():
         return isinstance(self.op, int)
 
     def is_model_of(self, trace, state, actions):
-        return models(self, trace, state, actions)
+        return models(self, trace, state)
 
     def __getitem__(self, item):
         if item == 0:
@@ -90,43 +94,42 @@ def spath(i,s1,s2):
     return Sensor(s1,i,s2)
 
 
-def models(sigma, t, s, A):
+def models(sigma, t, s):
     # assert isinstance(sigma, Sensor)
     # assert isinstance(t, structures.domain.Trace)
     assert isinstance(s, structures.domain.State)
-    assert isinstance(A, structures.domain.Domain)
     if sigma.is_atom():
         return sigma.lhs is True or sigma.lhs in s
     elif sigma.is_negated():
         return sigma.lhs not in s
     else:
         if sigma.op == sigma.land:
-            return models(sigma.lhs, t, s, A) and models(sigma.rhs, t, s, A)
+            return models(sigma.lhs, t, s) and models(sigma.rhs, t, s)
         elif sigma.op == sigma.lor:
-            return models(sigma.lhs, t, s, A) or models(sigma.rhs, t, s, A)
+            return models(sigma.lhs, t, s) or models(sigma.rhs, t, s)
         elif sigma.is_path_formula():
-            if sigma.op == 0:
-                return models(sigma.lhs, t, s, A) and models(sigma.rhs, t, s, A)
+            if sigma.op == 0 or len(t) == 0:
+                return models(sigma.lhs, t, s) and models(sigma.rhs, t, s)
             else:
                 a = t[0]
                 assert isinstance(a, structures.domain.Action)
                 tp = t[1:]
                 sp = a.result(s)
-                if models(sigma.lhs, t, s, A):
-                    if not models(Sensor(sigma.rhs), t, s, A):
-                        return models(Sensor(true, sigma.op -1, sigma.rhs), tp, sp, A)
+                if models(sigma.lhs, t, s):
+                    if not models(Sensor(sigma.rhs), t, s):
+                        return models(Sensor(true, sigma.op - 1, sigma.rhs), tp, sp)
                     else:
                         return True
                 else:
-                    return models(sigma,tp,sp,A)
+                    return models(sigma, tp, sp)
         else:
             raise Exception
 
 
-import re
-
-
 class Sensor_Parser():
+
+    def __init__(self):
+        self.true = Sensor(True)
 
     def read_file(self,filename):
         str = ""
@@ -188,12 +191,13 @@ class Sensor_Parser():
             raise 'Expression ' + str + ' does not match a sensor'
 
     def build_sensor(self,tokens):
-        if (tokens is list and len(tokens) == 1):  # This should be a symbol
-            t = tokens.pop(0)
-            if t is list:
-                return self.build_sensor(t)
-            else:
-                return Sensor(self.parse_symbol(t))
+        if isinstance(tokens,list) and len(tokens) == 1:  # This should be a symbol
+            # t = tokens.pop(0)
+            # if t is list:
+            #     return self.build_sensor(t)
+            # else:
+            #     return Sensor(self.parse_symbol(t))
+            return Sensor(self.parse_symbol(tokens))
         elif (isinstance(tokens,str)):
             return Sensor(self.parse_symbol(tokens))
         elif len(tokens) == 2:  # This should be a negation
@@ -214,4 +218,4 @@ class Sensor_Parser():
         elif str == "False":
             return False
         else:
-            return str
+            return tuple(str)

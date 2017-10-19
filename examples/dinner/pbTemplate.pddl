@@ -1,0 +1,5 @@
+(define (problem pbTemplate)
+   (:domain dinner)
+   (:init #INITIAL_STATE#)
+   (:goal (and #GOAL_STATE#) )
+)

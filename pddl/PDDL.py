@@ -3,12 +3,26 @@
 
 import re
 from structures.domain import Action
+from structures.domain import Domain
+
 
 class PDDL_Parser:
 
     def __init__(self):
         self.use_types = False
         self.use_strips = True
+
+    @property
+    def initial_state(self):
+        return state_to_tuple(self.state)
+
+    @property
+    def goal(self):
+        return (self.positive_goals,self.negative_goals)
+
+    @property
+    def domain(self):
+        return Domain(self.actions)
 
     # ------------------------------------------
     # Tokens
@@ -145,6 +159,12 @@ class PDDL_Parser:
                 neg.append(proposition[-1])
             else:
                 pos.append(proposition)
+
+def state_to_tuple(state):
+    newstate = []
+    for fact in state:
+        newstate += tuple(fact)
+    return newstate
 
 # ==========================================
 # Main

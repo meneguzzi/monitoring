@@ -8,6 +8,12 @@ def powerset(iterable):
     return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
 
 
+class Problem():
+    def __init__(self, initial_state, goal_state):
+        self.initial_state = initial_state
+        self.goal_state = goal_state
+
+
 class Domain():
 
     def __init__(self,actions):
@@ -42,7 +48,7 @@ class Action:
         self.positive_preconditions = positive_preconditions
         self.negative_preconditions = negative_preconditions
         self.add_effects = add_effects
-        self.del_effects = del_effects
+        self.del_effects = del_effects if del_effects is not None else []
         self.cost=0
 
     def all_facts(self):
@@ -118,6 +124,19 @@ class Trace():
     def __repr__(self):
         return repr(self.trace)
 
+    def __len__(self):
+        return len(self.trace)
+
+    @staticmethod
+    def plan_to_trace(s0, plan):
+        trace = [s0]
+        for op in plan:
+            assert(isinstance(op,Action))
+            if op.applicable(trace[-1]):
+                trace+=op.result(trace[-1])
+            else:
+                raise "Plan "+str(plan)+" contains invalid action "+str(op)
+        return Trace(trace)
 
 class State():
 
@@ -175,6 +194,23 @@ class State():
     def __repr__(self):
         return str(list(self.facts))
 
+    def to_PDDL(self):
+        str = "(and "
+        for literal in self.facts:
+            str += literal_to_pddl(literal)
+        str += ")"
+        return str
+
+
+def literal_to_pddl(s):
+    pddl = "("
+    if s is list or s is tuple:
+        for e in s:
+            pddl+=" "+str(e)
+    else:
+        pddl +=str(s)
+    pddl +=")"
+    return pddl
 
 if __name__ == '__main__':
     s = State(['p','q'])
