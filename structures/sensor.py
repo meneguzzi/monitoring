@@ -25,6 +25,20 @@ class Sensor():
         if(self.op != None and self.op not in self.valid_ops and not isinstance(self.op, int)):
             raise Exception("Invalid op "+ self.op)
 
+    """used to generate terminal sensors for GP"""
+    def generateSensor(depth):
+        if depth==0:
+            return Sensor(random.choice(domain.all_facts))
+        else:
+            op=random.choice([neg,lor,land,"spath","terminal"])
+            if op==neg:
+                return Sensor(generateSensor(depth-1),neg)
+            if op==lor or op==land:
+                return Sensor(generateSensor(depth-1),op,generateSensor(depth-1))
+            if op=="spath":
+                return Sensor(generateSensor(depth-1),random.randint(1,10),generateSensor(depth-1))
+            if op=="terminal":
+                return Sensor(random.choice(domain.all_facts))    
 
 
     @property
