@@ -6,7 +6,7 @@ from pddl.PDDL import PDDL_Parser
 
 class Propositional_Planner:
 
-    def solve(self,domainfile, problemfile):
+    def solve_file(self,domainfile, problemfile):
         # Parser
         parser = PDDL_Parser()
         parser.parse_domain(domainfile)
