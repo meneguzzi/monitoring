@@ -17,8 +17,8 @@ class MonitoringTestCase(unittest.TestCase):
     def test_domain1_parse(self):
         A = self.domain1()
         parser = PDDL_Parser()
-        parser.parse_domain('../examples/simple/simple.pddl')
-        parser.parse_problem('../examples/simple/pb1.pddl')
+        parser.parse_domain('examples/simple/simple.pddl')
+        parser.parse_problem('examples/simple/pb1.pddl')
         # self.assertEquals(parser.actions,A.actions)
 
     def test_monitoring(self):

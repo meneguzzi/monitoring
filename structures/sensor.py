@@ -1,5 +1,6 @@
 import structures.domain
 import re
+import random
 
 
 class Sensor():
@@ -26,17 +27,18 @@ class Sensor():
             raise Exception("Invalid op "+ self.op)
 
     """used to generate terminal sensors for GP"""
-    def generateSensor(depth):
+    @classmethod
+    def generateSensor(cls,domain,depth):
         if depth==0:
             return Sensor(random.choice(domain.all_facts))
         else:
-            op=random.choice([neg,lor,land,"spath","terminal"])
-            if op==neg:
-                return Sensor(generateSensor(depth-1),neg)
-            if op==lor or op==land:
-                return Sensor(generateSensor(depth-1),op,generateSensor(depth-1))
+            op=random.choice([Sensor.neg,Sensor.lor,Sensor.land,"spath","terminal"])
+            if op==Sensor.neg:
+                return Sensor(Sensor.generateSensor(domain,depth-1),Sensor.neg)
+            if op==Sensor.lor or op==Sensor.land:
+                return Sensor(Sensor.generateSensor(domain,depth-1),op,Sensor.generateSensor(domain,depth-1))
             if op=="spath":
-                return Sensor(generateSensor(depth-1),random.randint(1,10),generateSensor(depth-1))
+                return Sensor(Sensor.generateSensor(domain,depth-1),random.randint(1,10),Sensor.generateSensor(domain,depth-1))
             if op=="terminal":
                 return Sensor(random.choice(domain.all_facts))    
 
