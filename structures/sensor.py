@@ -30,7 +30,7 @@ class Sensor():
     @classmethod
     def generate_sensor(cls, domain, depth):
         if depth==0:
-            return Sensor(random.choice(domain.all_facts))
+            return Sensor(random.choice(list(domain.all_facts)))
         else:
             op=random.choice([Sensor.neg,Sensor.lor,Sensor.land,"spath","terminal"])
             if op==Sensor.neg:
