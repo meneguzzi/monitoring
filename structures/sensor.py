@@ -28,19 +28,19 @@ class Sensor():
 
     """used to generate terminal sensors for GP"""
     @classmethod
-    def generateSensor(cls,domain,depth):
+    def generate_sensor(cls, domain, depth):
         if depth==0:
             return Sensor(random.choice(domain.all_facts))
         else:
             op=random.choice([Sensor.neg,Sensor.lor,Sensor.land,"spath","terminal"])
             if op==Sensor.neg:
-                return Sensor(Sensor.generateSensor(domain,depth-1),Sensor.neg)
+                return Sensor(Sensor.generate_sensor(domain, depth - 1), Sensor.neg)
             if op==Sensor.lor or op==Sensor.land:
-                return Sensor(Sensor.generateSensor(domain,depth-1),op,Sensor.generateSensor(domain,depth-1))
+                return Sensor(Sensor.generate_sensor(domain, depth - 1), op, Sensor.generate_sensor(domain, depth - 1))
             if op=="spath":
-                return Sensor(Sensor.generateSensor(domain,depth-1),random.randint(1,10),Sensor.generateSensor(domain,depth-1))
+                return Sensor(Sensor.generate_sensor(domain, depth - 1), random.randint(1, 10), Sensor.generate_sensor(domain, depth - 1))
             if op=="terminal":
-                return Sensor(random.choice(domain.all_facts))    
+                return Sensor(random.choice(list(domain.all_facts)))
 
 
     @property
