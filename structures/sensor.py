@@ -65,7 +65,7 @@ class Sensor():
     def is_path_formula(self):
         return isinstance(self.op, int)
 
-    def is_model_of(self, trace, state, actions):
+    def is_model_of(self, trace, state):
         return models(self, trace, state)
 
     def __getitem__(self, item):
