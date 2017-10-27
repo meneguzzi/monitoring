@@ -26,10 +26,10 @@ class MonitoringTestCase(unittest.TestCase):
         t1 = Trace([A['a'],A['b']])
         sensor = Sensor(Sensor("p"),"v",Sensor("q"))
         state = State(["p"])
-        assert(sensor.is_model_of(t1,state,A))
+        assert(sensor.is_model_of(t1,state))
 
         sensor = Sensor(Sensor("p"), 1, Sensor("q"))
-        assert (sensor.is_model_of(t1, state, A))
+        assert (sensor.is_model_of(t1, state))
 
     def test_sensor(self):
         s = Sensor(Sensor("p"),"v",Sensor("q"))
