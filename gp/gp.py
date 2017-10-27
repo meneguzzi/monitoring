@@ -41,7 +41,7 @@ toolbox.register("individual", tools.initIterate, creator.Individual, toolbox.ex
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 toolbox.register("compile", gp.compile, pset=pset)
 
-TRACES=monitor.generate_all_traces()
+TRACES=monitor.generate_all_traces("examples/simple/simple.pddl")
 MODELSENSOR=Sensor(True)
 
 def evalSensor(sensor):

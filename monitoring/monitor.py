@@ -1,6 +1,6 @@
 from pddl.PDDL import PDDL_Parser
 from pddl.propositional_planner import Propositional_Planner
-from structures.domain import State,Trace
+from structures.domain import State,Trace, Domain
 from structures.sensor import Sensor, Sensor_Parser
 from itertools import product
 
@@ -14,7 +14,7 @@ def generate_all_traces(domainfile):
     traces = set([])
     parser = PDDL_Parser()
     parser.parse_domain(domainfile)
-    for s0, sg in product(domain.generate_state_space(), repeat=2):
+    for s0, sg in product(parser.domain.generate_state_space(), repeat=2):
         s0 = list(s0)
         sg = list(sg)
         plan = planner.solve(parser.domain.groundify().actions.values(),s0,(sg,[]))
