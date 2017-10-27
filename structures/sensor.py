@@ -93,19 +93,19 @@ class Sensor():
 true = Sensor(True)
 
 
-def sand(s1,s2):
+def sand(cls,s1,s2):
     return Sensor(s1,"^",s2)
 
 
-def sor(s1,s2):
+def sor(cls,s1,s2):
     return Sensor(s1,"v",s2)
 
 
-def snot(s1):
+def snot(cls,s1):
     return Sensor(s1,"-")
 
 
-def spath(i,s1,s2):
+def spath(cls,i,s1,s2):
     assert isinstance(i,int)
     return Sensor(s1,i,s2)
 
