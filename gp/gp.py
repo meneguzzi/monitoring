@@ -3,6 +3,7 @@ from structures.sensor import Sensor, Sensor_Parser
 from structures import sensor
 from deap import gp,creator,base,tools,algorithms
 from monitoring import monitor
+from monitoring.monitor import evaluate_sensor_on_traces
 import random,numpy
 
 from pddl.PDDL import PDDL_Parser
@@ -30,6 +31,7 @@ for ts in getTerminalSensors(domain,NUMTERMINALS):
     pset.addTerminal(ts,Sensor)
 
 for i in range(1,NUMSTEPS+1):
+    pset.addPrimitive(int,[int],int)
     pset.addTerminal(i,int)
 
 creator.create("FitnessMax",base.Fitness,weights=(1.0,))
@@ -45,8 +47,8 @@ TRACES=monitor.generate_all_traces("examples/simple/simple.pddl")
 MODELSENSOR=Sensor(True)
 
 def evalSensor(sensor):
-    desired=monitor.evaluate_sensor_on_traces(TRACES,MODELSENSOR)
-    actual=monitor.evaluate_sensor_on_traces(TRACES,sensor)
+    desired=evaluate_sensor_on_traces(TRACES,MODELSENSOR)
+    actual=evaluate_sensor_on_traces(TRACES,sensor)
 
     tp=set(desired[0]) & set(actual[0])
     tn=set(desired[1]) & set(actual[1])
