@@ -160,6 +160,7 @@ class PDDL_Parser:
             else:
                 pos.append(proposition)
 
+
 def state_to_tuple(state):
     newstate = []
     for fact in state:

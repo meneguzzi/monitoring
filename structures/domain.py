@@ -96,6 +96,9 @@ class Action:
     def __eq__(self, other):
         return self.__dict__ == other.__dict__
 
+    # def __hash__(self):
+    #     return hash((self.positive_preconditions,self.negative_preconditions,self.add_effects,self.del_effects))
+
     def __repr__(self):
         return "<"+self.name+","+str(self.positive_preconditions)+","+str(self.negative_preconditions) + \
                "," + str(self.del_effects) + "," + str(self.add_effects) + ","+str(self.cost) +  ">"
@@ -105,7 +108,7 @@ class Trace():
     """ A trace from a plan, this should consist of a sequence of states"""
 
     def __init__(self, trace):
-        self.trace = trace
+        self.trace = tuple(trace)
 
     def __setitem__(self, key, value):
         if isinstance(value, State):
@@ -127,6 +130,20 @@ class Trace():
     def __len__(self):
         return len(self.trace)
 
+    def __hash__(self):
+        # TODO Reimplement this horribly inefficient mechanism
+        return hash(self.trace)
+
+    def __eq__(self, other):
+        if isinstance(other, Trace) and len(self) == len(other):
+            for i in range(len(other)):
+                if(other[i] != self[i]):
+                    return False
+        else:
+            return False
+
+        return True
+
     @staticmethod
     def plan_to_trace(s0, plan):
         trace = [s0]
@@ -137,6 +154,7 @@ class Trace():
             else:
                 raise "Plan "+str(plan)+" contains invalid action "+str(op)
         return Trace(trace)
+
 
 class State():
 
@@ -187,6 +205,9 @@ class State():
         else:
             self.facts.remove(other)
         return self
+
+    def __hash__(self):
+        return hash(self.facts)
 
     def __str__(self):
         return str("State: "+str(list(self.facts)))

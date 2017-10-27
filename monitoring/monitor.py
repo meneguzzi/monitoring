@@ -4,24 +4,25 @@ from structures.domain import State,Trace, Domain
 from structures.sensor import Sensor, Sensor_Parser
 from itertools import product
 
+
 class MonitorSynthesizer():
 
     def __init__(self):
         pass
 
 
-def generate_all_traces(domainfile):
+def generate_all_traces(domain_file):
     traces = []
     pddlparser = PDDL_Parser()
-    pddlparser.parse_domain(domainfile)
+    pddlparser.parse_domain(domain_file)
     pdomain = pddlparser.domain.groundify()
     planner = Propositional_Planner()
     for s0, sg in product(pdomain.generate_state_space(), repeat=2):
-        s0 = list(s0)
-        sg = list(sg)
-        plan = planner.solve(pdomain .actions.values(),s0,(sg,[]))
+        s0l = list(s0)
+        sgl = list(sg)
+        plan = planner.solve(pdomain .actions.values(),s0l,(sgl,[]))
         if plan is not None:
-            traces.append((s0,plan))
+            traces.append((s0,tuple(plan),sg))
         else:
             pass
             #print "No plan between "+str(s0)+" and "+str(sg)
