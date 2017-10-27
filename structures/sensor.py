@@ -24,6 +24,7 @@ class Sensor():
         self.op = op
 
         if(self.op != None and self.op not in self.valid_ops and not isinstance(self.op, int)):
+            print "***",self.op.func
             raise Exception("Invalid op "+ self.op)
 
     """used to generate terminal sensors for GP"""

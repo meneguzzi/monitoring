@@ -39,15 +39,15 @@ creator.create("Individual",gp.PrimitiveTree,fitness=creator.FitnessMax)
 
 toolbox = base.Toolbox()
 toolbox.register("expr", gp.genHalfAndHalf, pset=pset, min_=1, max_=2)
-toolbox.register("individual", Sensor, creator.Individual, toolbox.expr)
+toolbox.register("individual", tools.initIterate, creator.Individual, toolbox.expr)
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 toolbox.register("compile", gp.compile, pset=pset)
 
 TRACES=monitor.generate_all_traces("examples/simple/simple.pddl")
 MODELSENSOR=Sensor(True)
 
-def evalSensor(sensor):
-    print sensor.__class__
+def evalSensor(s):
+    sensor=toolbox.compile(expr=s)
     desired=evaluate_sensor_on_traces(TRACES,MODELSENSOR)
     actual=evaluate_sensor_on_traces(TRACES,sensor)
 
