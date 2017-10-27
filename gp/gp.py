@@ -39,7 +39,7 @@ creator.create("Individual",gp.PrimitiveTree,fitness=creator.FitnessMax)
 
 toolbox = base.Toolbox()
 toolbox.register("expr", gp.genHalfAndHalf, pset=pset, min_=1, max_=2)
-toolbox.register("individual", Sensor,  creator.Individual, toolbox.expr)
+toolbox.register("individual", Sensor, creator.Individual, toolbox.expr)
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 toolbox.register("compile", gp.compile, pset=pset)
 
