@@ -11,15 +11,17 @@ class MonitorSynthesizer():
 
 
 def generate_all_traces(domainfile):
-    traces = set([])
-    parser = PDDL_Parser()
-    parser.parse_domain(domainfile)
-    for s0, sg in product(parser.domain.generate_state_space(), repeat=2):
+    traces = []
+    pddlparser = PDDL_Parser()
+    pddlparser.parse_domain(domainfile)
+    pdomain = pddlparser.domain.groundify()
+    planner = Propositional_Planner()
+    for s0, sg in product(pdomain.generate_state_space(), repeat=2):
         s0 = list(s0)
         sg = list(sg)
-        plan = planner.solve(parser.domain.groundify().actions.values(),s0,(sg,[]))
+        plan = planner.solve(pdomain .actions.values(),s0,(sg,[]))
         if plan is not None:
-            traces.add((s0,plan))
+            traces.append((s0,plan))
         else:
             pass
             #print "No plan between "+str(s0)+" and "+str(sg)
@@ -38,27 +40,27 @@ def evaluate_sensor_on_traces(traces,sensor):
             invalid.append(t)
     return (valid,invalid)
 
-if __name__ == '__main__':
-    parser = PDDL_Parser()
-    parser.parse_domain("../examples/dinner/dinner.pddl")
-    parser.parse_problem("../examples/dinner/pb1.pddl")
-    sensor_parser = Sensor_Parser()
-    sensor = sensor_parser.parse_sensor("( (clean) [1] (dinner) )")
-
-    domain = parser.domain.groundify()
-    planner = Propositional_Planner()
-
-    for s0, sg in product(domain.generate_state_space(), repeat=2):
-        s0 = list(s0)
-        sg = list(sg)
-        plan = planner.solve(parser.domain.groundify().actions.values(),s0,(sg,[]))
-        if plan is not None:
-            if len(plan) > 0:
-                print "Plan from "+str(s0)+" to "+str(sg)+" is "+str(plan)
-            #t = Trace.plan_to_trace(s0,plan)
-            #t.models(sensor,State(s0),domain)
-            if sensor.is_model_of(plan,State(s0),domain):
-                print str(sensor)+" is a model of "+str(plan)
-        else:
-            pass
-            #print "No plan between "+str(s0)+" and "+str(sg)
+# if __name__ == '__main__':
+#     parser = PDDL_Parser()
+#     parser.parse_domain("../examples/dinner/dinner.pddl")
+#     parser.parse_problem("../examples/dinner/pb1.pddl")
+#     sensor_parser = Sensor_Parser()
+#     sensor = sensor_parser.parse_sensor("( (clean) [1] (dinner) )")
+#
+#     domain = parser.domain.groundify()
+#     planner = Propositional_Planner()
+#
+#     for s0, sg in product(domain.generate_state_space(), repeat=2):
+#         s0 = list(s0)
+#         sg = list(sg)
+#         plan = planner.solve(parser.domain.groundify().actions.values(),s0,(sg,[]))
+#         if plan is not None:
+#             if len(plan) > 0:
+#                 print "Plan from "+str(s0)+" to "+str(sg)+" is "+str(plan)
+#             #t = Trace.plan_to_trace(s0,plan)
+#             #t.models(sensor,State(s0),domain)
+#             if sensor.is_model_of(plan,State(s0),domain):
+#                 print str(sensor)+" is a model of "+str(plan)
+#         else:
+#             pass
+#             #print "No plan between "+str(s0)+" and "+str(sg)
