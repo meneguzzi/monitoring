@@ -92,8 +92,8 @@ class Sensor():
             s += str(self.lhs)
         else:
             s += str(self.lhs)
-            s += (" "+str(self.print_op())+" " if self.op != None else "")
-            s += (str(self.rhs) if self.rhs!= None else "")
+            s += " "+str(self.print_op())+" " if self.op != None else ""
+            s += str(self.rhs) if self.rhs!= None else ""
 
         s += ")"
         return s
@@ -210,9 +210,9 @@ class Sensor_Parser():
             #     return self.build_sensor(t)
             # else:
             #     return Sensor(self.parse_symbol(t))
-            return Sensor(self.parse_symbol(tokens))
+            return Sensor(self.parse_symbol(tokens)[0])
         elif (isinstance(tokens,str)):
-            return Sensor(self.parse_symbol(tokens))
+            return Sensor(self.parse_symbol(tokens)[0])
         elif len(tokens) == 2:  # This should be a negation
             op = tokens.pop(0)
             lhs = tokens.pop(0)
