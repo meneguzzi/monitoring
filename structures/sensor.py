@@ -242,11 +242,10 @@ def sand(s1,s2):
 def sor(s1,s2):
     return Sensor(s1,"v",s2)
 
-
 def snot(s1):
     return Sensor(s1,"-")
 
 
-def spath(i,s1,s2):
+def spath(s1,s2,i):
     assert isinstance(i,int)
     return Sensor(s1,i,s2)
