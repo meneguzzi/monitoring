@@ -49,6 +49,7 @@ class MonitoringTestCase(unittest.TestCase):
 
         s = parser.parse_sensor("((p v q) [1] q)")
         print s
+        s = parser.parse_sensor(s)
 
 
 
