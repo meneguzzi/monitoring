@@ -204,6 +204,7 @@ class Sensor_Parser():
             raise 'Expression ' + str + ' does not match a sensor'
 
     def build_sensor(self,tokens):
+        # TODO Fix the nasty bit of code below...
         if isinstance(tokens,list) and len(tokens) == 1:  # This should be a symbol
             # t = tokens.pop(0)
             # if t is list:
