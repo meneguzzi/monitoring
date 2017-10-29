@@ -5,6 +5,7 @@ from deap import gp,creator,base,tools,algorithms
 from monitoring import monitor
 from monitoring.monitor import evaluate_sensor_on_traces
 import random,numpy
+from structures.sensor import snot,sor,sand,spath
 
 from pddl.PDDL import PDDL_Parser
 
@@ -38,7 +39,7 @@ creator.create("FitnessMax",base.Fitness,weights=(1.0,))
 creator.create("Individual",gp.PrimitiveTree,fitness=creator.FitnessMax)
 
 toolbox = base.Toolbox()
-toolbox.register("expr", gp.genHalfAndHalf, pset=pset, min_=1, max_=2)
+toolbox.register("expr", gp.genHalfAndHalf, pset=pset, min_=0, max_=2)
 toolbox.register("individual", tools.initIterate, creator.Individual, toolbox.expr)
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 toolbox.register("compile", gp.compile, pset=pset)
@@ -47,7 +48,9 @@ TRACES=monitor.generate_all_traces("examples/simple/simple.pddl")
 MODELSENSOR=Sensor(True)
 
 def evalSensor(s):
-    sensor=toolbox.compile(expr=s)
+    print("s:",str(s))
+    print("e:",eval(str(s)))
+    sensor=eval(str(s))#toolbox.compile(expr=str(s))
     desired=evaluate_sensor_on_traces(TRACES,MODELSENSOR)
     actual=evaluate_sensor_on_traces(TRACES,sensor)
 
