@@ -92,8 +92,8 @@ class Sensor():
             s += str(self.lhs)
         else:
             s += str(self.lhs)
-            s += (" "+str(self.print_op())+" " if self.op != None else "")
-            s += (str(self.rhs) if self.rhs!= None else "")
+            s += " "+str(self.print_op())+" " if self.op != None else ""
+            s += str(self.rhs) if self.rhs!= None else ""
 
         s += ")"
         return s
@@ -204,15 +204,16 @@ class Sensor_Parser():
             raise 'Expression ' + str + ' does not match a sensor'
 
     def build_sensor(self,tokens):
+        # TODO Fix the nasty bit of code below...
         if isinstance(tokens,list) and len(tokens) == 1:  # This should be a symbol
             # t = tokens.pop(0)
             # if t is list:
             #     return self.build_sensor(t)
             # else:
             #     return Sensor(self.parse_symbol(t))
-            return Sensor(self.parse_symbol(tokens))
+            return Sensor(self.parse_symbol(tokens)[0])
         elif (isinstance(tokens,str)):
-            return Sensor(self.parse_symbol(tokens))
+            return Sensor(self.parse_symbol(tokens)[0])
         elif len(tokens) == 2:  # This should be a negation
             op = tokens.pop(0)
             lhs = tokens.pop(0)
