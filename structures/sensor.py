@@ -86,7 +86,18 @@ class Sensor():
         return self.op
 
     def __repr__(self):
-        return (str(self.lhs) if self.lhs != None else "") + (" "+str(self.print_op())+" " if self.op != None else "") + (str(self.rhs) if self.rhs!= None else "")
+        s = "("
+        if self.is_negated():
+            s += self.print_op()
+            s += str(self.lhs)
+        else:
+            s += str(self.lhs)
+            s += (" "+str(self.print_op())+" " if self.op != None else "")
+            s += (str(self.rhs) if self.rhs!= None else "")
+
+        s += ")"
+        return s
+        # return (str(self.lhs) if self.lhs != None else "") + (" "+str(self.print_op())+" " if self.op != None else "") + (str(self.rhs) if self.rhs!= None else "")
 
     def __str__(self):
         return repr(self)

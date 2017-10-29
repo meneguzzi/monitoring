@@ -32,7 +32,7 @@ class MonitoringTestCase(unittest.TestCase):
         assert (sensor.is_model_of(t1, state))
 
     def test_sensor(self):
-        s = Sensor(Sensor(Sensor("p"),"~"),"v",Sensor("q"))
+        s = Sensor(Sensor(Sensor("p"),"-"),"v",Sensor("q"))
         assert(s != None)
         parser = Sensor_Parser()
 
