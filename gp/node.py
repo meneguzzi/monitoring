@@ -8,11 +8,15 @@ class Node:
 	self.arity=arity
 	self.children=[-1,-1,-1]
 	self.compiled=False
+
     
     def copyNode(self,parent):
-        n=Node(parent,contents,arity)
-	for c in self.children():
-		n.setChild(i,c.copyNode(n))
+        n=Node(parent,self.contents,self.arity)
+        for i in range(0,self.arity):
+                n.children[i]=self.children[i].copyNode(n)
+        #if self.arity>0:
+        #    n.children=[c.copyNode(n) for c in self.getChildren()]
+		
 	return n
 
     """only works if invoked on root of tree"""
@@ -24,8 +28,8 @@ class Node:
     def setChild(self,index,child):
         self.children[index]=child
 
-    def children():
-        return self.children[0:arity]
+    def getChildren(self):
+        return self.children[0:self.arity]
 
     """returns the sensor represented by this node"""
     def compile(self):

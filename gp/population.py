@@ -6,7 +6,7 @@ from monitoring.monitor import evaluate_sensor_on_traces
 
 class Population:
   """ng is the initial population generator"""
-  def __init__(self,num,ng,reproducePercent,mutatePercent,crossOverPercent,modelSensor,traces):
+  def __init__(self,num,ng,reproducePercent,mutatePercent,crossOverPercent,gpOps,modelSensor,traces):
     self.num=num
     self.ng=ng
     self.pop=[]
@@ -18,6 +18,7 @@ class Population:
 
     self.modelSensor=modelSensor
     self.traces=traces
+    self.gpOps=gpOps
 
      
   def iterate(self):
@@ -26,9 +27,6 @@ class Population:
         desired=evaluate_sensor_on_traces(self.traces,self.modelSensor)
         actual=evaluate_sensor_on_traces(self.traces,p.compile())
 
-        print "d:",desired
-        print
-        print "a:",actual
 
         tp=set(desired[0]) & set(actual[0])
         tn=set(desired[1]) & set(actual[1])
@@ -46,7 +44,8 @@ class Population:
           s+=fitness[ind]
           if s>=r:
               return ind
-
+      for ind in fitness: #return first individual if all fitnesses are 0
+              return ind
 
 
   def generation(self):
@@ -54,16 +53,19 @@ class Population:
 
       #normalize
       s=reduce((lambda x,y: x+y),fitness.values())
-      fitness={k:(v/s) for k,v in fitness.items()}  
+      if s!=0:
+          fitness={k:(v/s) for k,v in fitness.items()}  
+      else:
+          fitness={k:0 for k,v in fitness.items()}    
 
       newGen=[]
-      for i in range(0,len(self.pop)*self.reproducePercent):
+      for i in range(0,int(len(self.pop)*self.reproducePercent)):
           newGen.append(self.pickIndividual(fitness))
-      for i in range(0,len(self.pop)*self.mutatePercent):
-          newGen.append(self.gpOps.mutate(random.choice(fitness)))
-      for i in range(0,len(self.pop)*self.crossOverPercent):
+      for i in range(0,int(len(self.pop)*self.mutatePercent)):
+          newGen.append(self.gpOps.mutate(self.pickIndividual(fitness)))
+      for i in range(0,int(len(self.pop)*self.crossOverPercent)):
           newGen.extend(self.gpOps.crossOver(self.pickIndividual(fitness),self.pickIndividual(fitness)))
-      for i in range(0,len(self.pop)-(len(self.pop)*self.reproducePercent+self.mutatePercent+self.crossOverPercent)):
+      for i in range(0,len(self.pop)-int(len(self.pop)*self.reproducePercent+self.mutatePercent+self.crossOverPercent)):
           newGen.append(self.ng.addNode(None,1))
       self.pop=newGen
       return fitness

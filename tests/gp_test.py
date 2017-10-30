@@ -5,6 +5,7 @@ from structures.sensor import Sensor, Sensor_Parser
 from pddl.PDDL import PDDL_Parser
 from gp.nodeGenerator import NodeGenerator
 from gp.population import Population
+from gp.gpOps import GPOps
 import monitoring.monitor
 
 
@@ -24,8 +25,9 @@ class GPTestCase(unittest.TestCase):
         traces=monitoring.monitor.generate_all_traces(simplePDDL)
 
         sp=Sensor_Parser()
+        gpo=GPOps(terms,1,5,1,4)
 
-        pop=Population(100,ng,0.8,0.05,0.1,sp.parse_sensor("(p v q)"),traces)
+        pop=Population(100,ng,0.8,0.05,0.1,gpo,sp.parse_sensor("(p v q)"),traces)
 
         for i in range(0,100):
                 pop.generation()
