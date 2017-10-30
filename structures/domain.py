@@ -96,8 +96,9 @@ class Action:
     def __eq__(self, other):
         return self.__dict__ == other.__dict__
 
-    # def __hash__(self):
-    #     return hash((self.positive_preconditions,self.negative_preconditions,self.add_effects,self.del_effects))
+    def __hash__(self):
+        #return hash((self.positive_preconditions,self.negative_preconditions,self.add_effects,self.del_effects))
+        return hash((self.name,self.parameters)) # This should work even in the ground case.
 
     def __repr__(self):
         return "<"+self.name+","+str(self.positive_preconditions)+","+str(self.negative_preconditions) + \
