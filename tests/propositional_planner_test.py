@@ -19,9 +19,9 @@ class Propositional_Planner_Test(unittest.TestCase):
         planner = Propositional_Planner()
         self.assertEqual(planner.solve_file('examples/dinner/dinner.pddl', 'examples/dinner/pb1.pddl'),
                          [
-                Action('cook', [], [['clean']], [], [['dinner']], []),
-                Action('wrap', [], [['quiet']], [], [['present']], []),
-                Action('carry', [], [['garbage']], [], [], [['garbage'], ['clean']])
+                Action('cook', [], [('clean',)], [], [('dinner',)], []),
+                Action('wrap', [], [('quiet',)], [], [('present',)], []),
+                Action('carry', [], [('garbage',)], [], [], [('garbage',), ('clean',)])
             ]
                          )
 

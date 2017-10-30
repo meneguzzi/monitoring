@@ -14,7 +14,7 @@ class PDDL_Parser:
 
     @property
     def initial_state(self):
-        return state_to_tuple(self.state)
+        return self.state_to_tuple(self.state)
 
     @property
     def goal(self):
@@ -136,7 +136,7 @@ class PDDL_Parser:
                     self.objects = group
                 elif t == ':init':
                     group.pop(0)
-                    self.state = group
+                    self.state = self.state_to_tuple(group)
                 elif t == ':goal':
                     self.split_propositions(group[1], self.positive_goals, self.negative_goals, '', 'goals')
                 else: print(str(t) + ' is not recognized in problem')
@@ -156,16 +156,17 @@ class PDDL_Parser:
             if proposition[0] == 'not':
                 if len(proposition) != 2:
                     raise Exception('Error with ' + name + ' negative' + part)
-                neg.append(proposition[-1])
+                neg.append(tuple(proposition[-1]))
             else:
-                pos.append(proposition)
+                pos.append(tuple(proposition))
 
 
-def state_to_tuple(state):
-    newstate = []
-    for fact in state:
-        newstate += tuple(fact)
-    return newstate
+    def state_to_tuple(self, state):
+        newstate = []
+        for fact in state:
+            tf = tuple(fact)
+            newstate.append(tf)
+        return newstate
 
 # ==========================================
 # Main

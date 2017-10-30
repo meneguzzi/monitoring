@@ -59,10 +59,10 @@ class PDDL_Test(unittest.TestCase):
         self.assertEqual(parser.domain_name, 'dinner')
         self.assertEqual(parser.actions,
             [
-                Action('cook', [], [['clean']], [], [['dinner']], []),
-                Action('wrap', [], [['quiet']], [], [['present']], []),
-                Action('carry', [], [['garbage']], [], [], [['garbage'], ['clean']]),
-                Action('dolly', [], [['garbage']], [], [], [['garbage'], ['quiet']])
+                Action('cook', [], [('clean',)], [], [('dinner',)], []),
+                Action('wrap', [], [('quiet',)], [], [('present',)], []),
+                Action('carry', [], [('garbage',)], [], [], [('garbage',), ('clean',)]),
+                Action('dolly', [], [('garbage',)], [], [], [('garbage',), ('quiet',)])
             ]
         )
 
@@ -76,9 +76,9 @@ class PDDL_Test(unittest.TestCase):
         parser.parse_problem('examples/dinner/pb1.pddl')
         self.assertEqual(parser.problem_name, 'pb1')
         self.assertEqual(parser.objects, [])
-        self.assertEqual(parser.state, [['garbage'],['clean'],['quiet']])
-        self.assertEqual(parser.positive_goals, [['dinner'], ['present']])
-        self.assertEqual(parser.negative_goals, [['garbage']])
+        self.assertEqual(parser.state, [('garbage',),('clean',),('quiet',)])
+        self.assertEqual(parser.positive_goals, [('dinner',), ('present',)])
+        self.assertEqual(parser.negative_goals, [('garbage',)])
 
     #-------------------------------------------
     # Split propositions
