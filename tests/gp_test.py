@@ -7,11 +7,26 @@ from gp.nodeGenerator import NodeGenerator
 from gp.population import Population
 from gp.gpOps import GPOps
 import monitoring.monitor
+from monitoring.monitor import evaluate_sensor_on_traces
 
 
 class GPTestCase(unittest.TestCase):
 
-    def test_randomsensor(self):
+   def test_evaluate_sensor(self):
+        """ test demorgan"""
+        simplePDDL='examples/simple/simple.pddl'
+        sp=Sensor_Parser()
+        traces=monitoring.monitor.generate_all_traces(simplePDDL)
+        #a=evaluate_sensor_on_traces(traces,sp.parse_sensor("(-((q) v (p)))"))
+        a=evaluate_sensor_on_traces(traces,sp.parse_sensor("(-((q) ^ (p)))"))
+        b=evaluate_sensor_on_traces(traces,sp.parse_sensor("((-(q)) ^ (-(p)))"))
+        print len(set(a[0]) & set(b[0]))
+        print len(set(a[0]))
+        print len(set(b[0]))
+        print len(set(a[1]) & set(b[1]))
+        print len(set(a[1]))
+
+   def test_randomsensor(self):
         parser=PDDL_Parser()
         simplePDDL='examples/simple/simple.pddl'
         parser.parse_domain(simplePDDL)
@@ -29,9 +44,9 @@ class GPTestCase(unittest.TestCase):
 
         pop=Population(100,ng,0.8,0.05,0.1,gpo,sp.parse_sensor("(p v q)"),traces)
 
-        for i in range(0,100):
-                pop.generation()
-        print pop.generation()
+    #    for i in range(0,100):
+    #            pop.generation()
+    #    print pop.generation()
 
 
         

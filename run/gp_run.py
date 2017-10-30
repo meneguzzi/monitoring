@@ -6,6 +6,7 @@ from gp.nodeGenerator import NodeGenerator
 from gp.population import Population
 from gp.gpOps import GPOps
 import monitoring.monitor
+from monitoring.monitor import evaluate_sensor_on_traces
 
 
 
@@ -17,8 +18,9 @@ def test_randomsensor():
         domain = parser.domain.groundify()
         terms=[]
         for i in range(0,15):
-          terms.append(Sensor.generate_sensor(domain, 5))
-        ng=NodeGenerator(terms,2,6,2,6)
+          terms.append(Sensor.generate_sensor(domain, 2))
+        print terms
+        ng=NodeGenerator(terms,1,5,2,5)
 
         traces=monitoring.monitor.generate_all_traces(simplePDDL)
 
