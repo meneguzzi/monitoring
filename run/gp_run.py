@@ -16,9 +16,9 @@ def test_randomsensor():
         parser.parse_problem('examples/simple/pb1.pddl')
         domain = parser.domain.groundify()
         terms=[]
-        for i in range(0,5):
+        for i in range(0,15):
           terms.append(Sensor.generate_sensor(domain, 5))
-        ng=NodeGenerator(terms,1,2,2,4)
+        ng=NodeGenerator(terms,2,6,2,6)
 
         traces=monitoring.monitor.generate_all_traces(simplePDDL)
 
@@ -30,11 +30,17 @@ def test_randomsensor():
         for i in range(0,100):
                 print "g",i
                 f=pop.generation()
+                m=0
+                p=None
+                for k,v in f.iteritems():
+                        if v>m:
+                                m=v
+                                p=k
+                print m,p,len(pop.pop)
+
 
         print pop.generation()
 
-
-        
 
 
 if __name__ == '__main__':

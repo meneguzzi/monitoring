@@ -44,8 +44,7 @@ class Population:
           s+=fitness[ind]
           if s>=r:
               return ind
-      for ind in fitness: #return first individual if all fitnesses are 0
-              return ind
+      return random.choice(fitness.keys()) #return random individual otherwise
 
 
   def generation(self):
