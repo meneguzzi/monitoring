@@ -13,12 +13,12 @@ class GPTestCase(unittest.TestCase):
         parser.parse_domain('examples/simple/simple.pddl')
         parser.parse_problem('examples/simple/pb1.pddl')
         domain = parser.domain.groundify()
-	terms=[]
-	for i in range(0,5):
+        terms=[]
+        for i in range(0,5):
           terms.append(Sensor.generate_sensor(domain, 5))
-	ng=NodeGenerator(terms,1,2,2,4)
-	r=ng.addNode(None,0)
-	print(r.compile())
+        ng=NodeGenerator(terms,1,2,2,4)
+        r=ng.addNode(None,0)
+        print(r.compile())
 
 
 if __name__ == '__main__':
