@@ -59,14 +59,18 @@ class Population:
           fitness={k:0 for k,v in fitness.items()}    
 
       newGen=[]
-      for i in range(0,int(len(self.pop)*self.reproducePercent)):
+      for i in range(0,int(self.num*self.reproducePercent)):
           newGen.append(self.pickIndividual(fitness))
-      for i in range(0,int(len(self.pop)*self.mutatePercent)):
+      #print "r", len(newGen)
+      for i in range(0,int(self.num*self.mutatePercent)):
           newGen.append(self.gpOps.mutate(self.pickIndividual(fitness)))
-      for i in range(0,int(len(self.pop)*self.crossOverPercent)):
+      #print "m", len(newGen)
+      for i in range(0,int(self.num*self.crossOverPercent*0.5)):
           newGen.extend(self.gpOps.crossOver(self.pickIndividual(fitness),self.pickIndividual(fitness)))
-      for i in range(0,len(self.pop)-int(len(self.pop)*self.reproducePercent+self.mutatePercent+self.crossOverPercent)):
+      #print "c",len(newGen)
+      for i in range(0,self.num-int(self.num*(self.reproducePercent+self.mutatePercent+self.crossOverPercent))):
           newGen.append(self.ng.addNode(None,1))
+      #print "n",len(newGen)
       self.pop=newGen
       return fitness
       
