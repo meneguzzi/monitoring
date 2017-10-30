@@ -1,15 +1,17 @@
 import random
-import gp.nodeGenerator
-import gp.gpOps
+from nodeGenerator import NodeGenerator
+import gpOps
+from monitoring.monitor import evaluate_sensor_on_traces
 
 
 class Population:
-  """nodeGenerator is the initial population generator"""
-  def __init__(self,num,nodeGenerator,reproducePercent,mutatePercent,crossOverPercent,modelSensor,traces):
+  """ng is the initial population generator"""
+  def __init__(self,num,ng,reproducePercent,mutatePercent,crossOverPercent,modelSensor,traces):
     self.num=num
-    self.nodeGenerator=nodeGenerator
+    self.ng=ng
+    self.pop=[]
     for i in range(0,num):
-	    pop.append(nodeGenerator.addNode(None,1))
+        self.pop.append(ng.addNode(None,1))
     self.reproducePercent=reproducePercent #percent of pure copy
     self.mutatePercent=mutatePercent #percent which will be mutated
     self.crossOverPercent=crossOverPercent #percent of pop generated using crossover
@@ -20,26 +22,30 @@ class Population:
      
   def iterate(self):
     fitness={}
-    for p in pop:
-	    desired=evaluate_sensor_on_traces(self.traces,self.modelSensor)
-	    actual=evaluate_sensor_on_traces(self.traces,p.compile())
+    for p in self.pop:
+        desired=evaluate_sensor_on_traces(self.traces,self.modelSensor)
+        actual=evaluate_sensor_on_traces(self.traces,p.compile())
 
-	    tp=set(desired[0]) & set(actual[0])
-	    tn=set(desired[1]) & set(actual[1])
+        print "d:",desired
+        print
+        print "a:",actual
 
-	    fp=set(actual[0]) - set(desired[1])
-	    fn=set(actual[1]) - set(desired[0])
+        tp=set(desired[0]) & set(actual[0])
+        tn=set(desired[1]) & set(actual[1])
 
-	    fitness[p]=(len(tp)+len(tn)-len(fp)-len(fn))
+        fp=set(actual[0]) - set(desired[1])
+        fn=set(actual[1]) - set(desired[0])
+
+        fitness[p]=(len(tp)+len(tn)-len(fp)-len(fn))
     return fitness
 
   def pickIndividual(self,fitness):
       r=random.random()
       s=0
       for ind in fitness:
-	      s+=fitness[ind]
-	      if s>=r:
-		      return ind
+          s+=fitness[ind]
+          if s>=r:
+              return ind
 
 
 
@@ -51,14 +57,14 @@ class Population:
       fitness={k:(v/s) for k,v in fitness.items()}  
 
       newGen=[]
-      for i in range(0,len(pop)*self.reproducePercent):
-	      newGen.append(self.pickIndividual(fitness))
-      for i in range(0,len(pop)*self.mutatePercent):
-	      newGen.append(self.gpOps.mutate(random.choice(fitness)))
-      for i in range(0,len(pop)*self.crossOverPercent):
-	      newGen.extend(self.gpOps.crossOver(self.pickIndividual(fitness),self.pickIndividual(fitness)))
-      for i in range(0,len(pop)-(len(pop)*self.reproducePercent+self.mutatePercent+self.crossOverPercent)):
-	      newGen.append(self.nodeGenerator.addNode(None,1))
-      pop=newGen
+      for i in range(0,len(self.pop)*self.reproducePercent):
+          newGen.append(self.pickIndividual(fitness))
+      for i in range(0,len(self.pop)*self.mutatePercent):
+          newGen.append(self.gpOps.mutate(random.choice(fitness)))
+      for i in range(0,len(self.pop)*self.crossOverPercent):
+          newGen.extend(self.gpOps.crossOver(self.pickIndividual(fitness),self.pickIndividual(fitness)))
+      for i in range(0,len(self.pop)-(len(self.pop)*self.reproducePercent+self.mutatePercent+self.crossOverPercent)):
+          newGen.append(self.ng.addNode(None,1))
+      self.pop=newGen
       return fitness
       
