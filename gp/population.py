@@ -1,3 +1,8 @@
+import random
+import gp.nodeGenerator
+import gp.gpOps
+
+
 class Population:
   """nodeGenerator is the initial population generator"""
   def __init__(self,num,nodeGenerator,reproducePercent,mutatePercent,crossOverPercent,modelSensor,traces):
