@@ -18,19 +18,21 @@ class GPOps:
 	    toVisit.append(c.children())
     return random.choice(nodeList) 
 
-  #TODO: must do a deep copy before mutating
   def mutate(self,root):
     ng=NodeGenerator(self.terminals,self.minSpath,self.maxSpath,self.minDepth,self.maxDepth)
+    root=root.copyNode(None)
     r=pickNode(root)
     if r.parent.children.index(r)==2:
 	    r=ng.terminalInt(r.parent)
     else:   
       r=ng.addNode(r.parent,1)
     r.resetCompilation()
+    return root
 
-#TODO: must do a deep copy before crossing over. TODO: must return a list containing two new individuals 
   def crossOver(self,root1,root2):
     okNodes=False
+    root1=root1.CopyNode(None)
+    root2=root2.CopyNode(None)
     while not okNodes:
       n1=pickNode(root1)
       n2=pickNode(root2)
@@ -43,4 +45,5 @@ class GPOps:
     n2.parent=t
     n1.resetCompilation()
     n2.resetCompilation()
+    return [root1,root2]
 

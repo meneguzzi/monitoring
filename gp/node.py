@@ -8,6 +8,17 @@ class Node:
 	self.arity=arity
 	self.children=[-1,-1,-1]
 	self.compiled=False
+    
+    def copyNode(self,parent):
+        n=Node(parent,contents,arity)
+	for c in self.children():
+		n.setChild(i,c.copyNode(n))
+	return n
+
+    """only works if invoked on root of tree"""
+    def __deepcopy__(self,memo):
+        return self.copyNode(None)
+
 
     """index 0 - LHS, 1 - RHS, 2 - CENTER (only for SPATH)"""
     def setChild(self,index,child):

@@ -1,8 +1,17 @@
 class Population:
-  def __init__(self,num,nodeGenerator,modelSensor,traces):
+  """nodeGenerator is the initial population generator"""
+  def __init__(self,num,nodeGenerator,reproducePercent,mutatePercent,crossOverPercent,modelSensor,traces):
     self.num=num
+    self.nodeGenerator=nodeGenerator
     for i in range(0,num):
 	    pop.append(nodeGenerator.addNode(None,1))
+    self.reproducePercent=reproducePercent #percent of pure copy
+    self.mutatePercent=mutatePercent #percent which will be mutated
+    self.crossOverPercent=crossOverPercent #percent of pop generated using crossover
+
+    self.modelSensor=modelSensor
+    self.traces=traces
+
      
   def iterate(self):
     fitness={}
@@ -44,12 +53,7 @@ class Population:
       for i in range(0,len(pop)*self.crossOverPercent):
 	      newGen.extend(self.gpOps.crossOver(self.pickIndividual(fitness),self.pickIndividual(fitness)))
       for i in range(0,len(pop)-(len(pop)*self.reproducePercent+self.mutatePercent+self.crossOverPercent)):
-	      newGen.append(ng.addNode(None,1))
+	      newGen.append(self.nodeGenerator.addNode(None,1))
       pop=newGen
+      return fitness
       
-
-
-
-
-      
-
