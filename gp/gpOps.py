@@ -23,19 +23,32 @@ class GPOps:
 
   def mutate(self,root):
     ng=NodeGenerator(self.terminals,self.minSpath,self.maxSpath,self.minDepth,self.maxDepth)
+    #print "b:",root.compile()
     root=root.copyNode(None)
     r=self.pickNode(root)
+    #print "sel:",r.compile()
+    par=r.parent
+    ind=-1
+    if r.parent!=None:
+      ind=r.parent.children.index(r)
     if r.parent!=None and r.parent.children.index(r)==2: #if it is an spath
         r=ng.terminalInt(r.parent)
     else:   
-      r=ng.addNode(r.parent,1)
+        r=ng.addNode(r.parent,1)
+    if r.parent!=None:
+        par.children[ind]=r
+    else: #parent is null, so we are root node
+        root=r
     r.resetCompilation()
+    #print "new:",r.compile()
+    #print "a:",root.compile()
     return root
 
   def crossOver(self,root1,root2):
     okNodes=False
     root1=root1.copyNode(None)
     root2=root2.copyNode(None)
+    print root1.compile()
     while not okNodes:
       n1=self.pickNode(root1)
       n2=self.pickNode(root2)
@@ -48,5 +61,6 @@ class GPOps:
     n2.parent=t
     n1.resetCompilation()
     n2.resetCompilation()
+    print root1.compile()
     return [root1,root2]
 
