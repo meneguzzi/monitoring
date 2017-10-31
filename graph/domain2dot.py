@@ -70,7 +70,7 @@ def main(argv):
 
 if __name__ == "__main__":
     # main(sys.argv[1:])
-    main(['-d','../examples/dinner/dinner.pddl','-o','graph.dot'])
+    main(['-d','../examples/simple/simple.pddl','-o','graph.dot'])
 
 
 # if __name__ == '__main__':
