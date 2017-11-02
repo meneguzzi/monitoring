@@ -3,6 +3,8 @@ import unittest
 from structures.domain import Domain, Action, State, Trace
 from structures.sensor import Sensor, Sensor_Parser
 from pddl.PDDL import PDDL_Parser
+import monitoring.monitor
+from monitoring.monitor import evaluate_sensor_on_traces
 
 class MonitoringTestCase(unittest.TestCase):
 
@@ -52,7 +54,47 @@ class MonitoringTestCase(unittest.TestCase):
         s = parser.parse_sensor(str(s))
         print s
  
+    def test_evaluate_sensor(self):
+        """ test demorgan"""
+        simplePDDL = 'examples/simple/simple.pddl'
+        sp = Sensor_Parser()
+        traces = monitoring.monitor.generate_all_traces(simplePDDL)
 
+        # a=evaluate_sensor_on_traces(traces,sp.parse_sensor("(-((q) v (p)))"))
+        a = evaluate_sensor_on_traces(traces, sp.parse_sensor("(-((q) ^ (p)))"))
+        b = evaluate_sensor_on_traces(traces, sp.parse_sensor("((-(q)) ^ (-(p)))"))
+        print "Sensor a's valid traces " + str(a[0])
+        print "Sensor b's valid traces " + str(b[0])
+        print "Intersection between two sensors: " + str(len(set(a[0]) & set(b[0])))
+        print "Valid traces for sensor a: " + str(len(set(a[0])))
+        print "Valid traces for sensor b: " + str(len(set(b[0])))
+        self.assertNotEqual(len(set(a[0])), len(set(b[0])))
+
+        print "Sensor a's invalid traces " + str(a[1])
+        print "Sensor b's invalid traces " + str(b[1])
+        print "Intersection of invalid traces: " + str(len(set(a[1]) & set(b[1])))
+        print "Invalid traces for sensor a: " + str(len(set(a[1])))
+        self.assertNotEqual(len(set(a[1])), len(set(b[1])))
+
+    def test_evaluate_temporal_sensor(self):
+        """ test demorgan"""
+        simplePDDL = 'examples/simple/simple.pddl'
+        sp = Sensor_Parser()
+        traces = monitoring.monitor.generate_all_traces(simplePDDL)
+        a = evaluate_sensor_on_traces(traces, sp.parse_sensor("(q [2] r)"))
+        b = evaluate_sensor_on_traces(traces, sp.parse_sensor("(r [1] q)"))
+        print "Sensor a's valid traces " + str(a[0])
+        print "Sensor b's valid traces " + str(b[0])
+        print "Intersection between two sensors: " + str(len(set(a[0]) & set(b[0])))
+        print "Valid traces for sensor a: " + str(len(set(a[0])))
+        print "Valid traces for sensor b: " + str(len(set(b[0])))
+        self.assertNotEqual(len(set(a[0])),len(set(b[0])))
+
+        print "Sensor a's invalid traces " + str(a[1])
+        print "Sensor b's invalid traces " + str(b[1])
+        print "Intersection of invalid traces: " + str(len(set(a[1]) & set(b[1])))
+        print "Invalid traces for sensor a: " + str(len(set(a[1])))
+        self.assertNotEqual(len(set(a[1])), len(set(b[1])))
 
 
 
