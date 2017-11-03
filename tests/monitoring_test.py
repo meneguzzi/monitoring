@@ -34,27 +34,53 @@ class MonitoringTestCase(unittest.TestCase):
         assert (sensor.is_model_of(t1, state))
 
     def test_sensor(self):
-        s = Sensor(Sensor(Sensor("p"),"-"),"v",Sensor("q"))
-        assert(s != None)
+        sigma = Sensor(Sensor(Sensor("p"),"-"),"v",Sensor("q"))
+        assert(sigma != None)
         parser = Sensor_Parser()
 
-        print s 
+        print sigma
 
-        s1=parser.parse_sensor(str(s))
-        print s1
+        sigma1 = parser.parse_sensor(str(sigma))
+        print sigma1
 
-        s2 = parser.parse_sensor("(p v q)")
-        print s2
+        sigma2 = parser.parse_sensor("(p v q)")
+        print sigma2
 
-        s = parser.parse_sensor("(p [1] q)")
+        sigma3 = parser.parse_sensor("(p [1] q)")
+        print sigma3
+
+        sigma4 = parser.parse_sensor("((p v q) [1] q)")
+        print sigma4
+
+        s = parser.parse_sensor(str(sigma4))
         print s
+        self.assertEqual(s,sigma4)
 
-        s = parser.parse_sensor("((p v q) [1] q)")
-        print s
-        s = parser.parse_sensor(str(s))
-        print s
+        s0 = State([])
+        print str(sigma1) + " should be a model of " + str(s0)
+        self.assertTrue(sigma1.is_model_of([], s0))
+        self.assertFalse(sigma2.is_model_of([], s0))
+        self.assertFalse(sigma3.is_model_of([], s0))
+        self.assertFalse(sigma4.is_model_of([], s0))
+
+        s1 = State(['q'])
+        print str(sigma1) + " should be a model of "+ str(s1)
+        self.assertTrue(sigma1.is_model_of([],s1))
+        print str(sigma2) + " should be a model of " + str(s1)
+        self.assertTrue(sigma2.is_model_of([], s1))
+        print str(sigma3) + " should not be a model of " + str(s1)
+        self.assertFalse(sigma3.is_model_of([], s1))
+        print str(sigma4) + " should be a model of " + str(s1)
+        self.assertTrue(sigma4.is_model_of([], s1))
+
+        ## Now for more complex tests (perhaps break it down)
+        a1 = Action('a1', [], [], [], ['q'], [])
+        s2 = State(['p'])
+        print str(sigma3) + " should be a model of " + str(s2) + " for trace " + str([a1])
+        self.assertTrue(sigma3.is_model_of([a1],s2))
+
  
-    def test_evaluate_sensor(self):
+    def test_evaluate_sensor_on_traces(self):
         """ test demorgan"""
         simplePDDL = 'examples/simple/simple.pddl'
         sp = Sensor_Parser()
@@ -76,7 +102,7 @@ class MonitoringTestCase(unittest.TestCase):
         print "Invalid traces for sensor a: " + str(len(set(a[1])))
         self.assertNotEqual(len(set(a[1])), len(set(b[1])))
 
-    def test_evaluate_temporal_sensor(self):
+    def test_evaluate_temporal_sensor_on_traces(self):
         """ test demorgan"""
         simplePDDL = 'examples/simple/simple.pddl'
         sp = Sensor_Parser()

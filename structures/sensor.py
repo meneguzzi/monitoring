@@ -103,6 +103,12 @@ class Sensor():
     def __str__(self):
         return repr(self)
 
+    def __eq__(self, other):
+        if isinstance(other, Sensor):
+            return repr(self) == repr(other)
+        else:
+            return False
+
 true = Sensor(True)
 
 
@@ -115,7 +121,8 @@ def models(sigma, t, s):
     if sigma.is_atom():
         return sigma.lhs is True or sigma.lhs in s
     elif sigma.is_negated():
-        return sigma.lhs not in s
+        #return sigma.lhs not in s
+        return not models(sigma.lhs, t, s)
     else:
         if sigma.op == sigma.land:
             return models(sigma.lhs, t, s) and models(sigma.rhs, t, s)
@@ -130,7 +137,7 @@ def models(sigma, t, s):
                 tp = t[1:]
                 sp = a.result(s)
                 if models(sigma.lhs, t, s):
-                    if not models(Sensor(sigma.rhs), t, s):
+                    if not models(sigma.rhs, t, s):
                         return models(Sensor(true, sigma.op - 1, sigma.rhs), tp, sp)
                     else:
                         return True
