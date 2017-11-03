@@ -4,10 +4,10 @@ class Node:
     """arity: spath 3, sand/sor 2, snot 1, terminal 0"""
     def __init__(self,parent,contents,arity):
         self.parent=parent
-	self.contents=contents
-	self.arity=arity
-	self.children=[-1,-1,-1]
-	self.compiled=False
+        self.contents=contents
+        self.arity=arity
+        self.children=[-1,-1,-1]
+        self.compiled=False
 
     
     def copyNode(self,parent):
@@ -16,8 +16,8 @@ class Node:
                 n.children[i]=self.children[i].copyNode(n)
         #if self.arity>0:
         #    n.children=[c.copyNode(n) for c in self.getChildren()]
-		
-	return n
+        
+        return n
 
     """only works if invoked on root of tree"""
     def __deepcopy__(self,memo):
@@ -35,12 +35,14 @@ class Node:
     def compile(self):
         """ already compiled """
         if self.compiled!=False:
-		return self.compiled
-	if self.arity==0:
-		return self.contents
-	else:
-		ch=[c.compile() for c in self.children[0:self.arity]]
-		return self.contents(*ch)
+            return self.compiled
+        if self.arity==0:
+            return self.contents
+        elif self.contents==None:
+            return self.children[0].compile()
+        else:
+            ch=[c.compile() for c in self.children[0:self.arity]]
+            return self.contents(*ch)
 
     """clear compiled sensor as needed. We go upwards rather than downwards as mutation/crossover won't affect stuff below"""
     def resetCompilation(self):

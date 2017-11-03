@@ -19,6 +19,7 @@ class GPOps:
       nodeList.append(c)
       if len(c.getChildren())>0:
         toVisit.extend(c.getChildren())
+    nodeList.remove(root)  
     return random.choice(nodeList) 
 
   def mutate(self,root):
@@ -54,6 +55,8 @@ class GPOps:
       n2=self.pickNode(root2)
       if (not n1.parent==None) and (not n2.parent==None) and (not n1.parent.children[2]==n1) and (not n2.parent.children[2]==n2):
           okNodes=True
+      else:
+          print "not ok  root"
     n1.parent.children[n1.parent.children.index(n1)]=n2
     n2.parent.children[n2.parent.children.index(n2)]=n1
     t=n1.parent

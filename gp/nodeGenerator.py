@@ -12,6 +12,10 @@ class NodeGenerator:
 
 	self.terminals=terminals
 
+    def growNone(self,parent,curDepth):
+      n=Node(parent,None,1)
+      n.setChild(0,self.addNode(n,curDepth)) 
+      return n
 
     def growSnot(self,parent,curDepth):
        n=Node(parent,structures.sensor.snot,1)
@@ -48,6 +52,9 @@ class NodeGenerator:
     def addNode(self,parent,curDepth):
        choices=[self.growSand, self.growSor, self.growSpath, self.growSnot, self.pickTerminal]
        sel=None
+
+       if parent==None:
+               return self.growNone(None,curDepth)
 
        if curDepth<self.minDepth:
 	       choices.remove(self.pickTerminal)
