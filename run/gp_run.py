@@ -18,7 +18,7 @@ def test_randomsensor():
         domain = parser.domain.groundify()
         terms=[]
         for i in range(0,15):
-          terms.append(Sensor.generate_sensor(domain, 2))
+          terms.append(Sensor.generate_sensor(domain, 1))
         print terms
         ng=NodeGenerator(terms,1,5,2,5)
 
@@ -29,7 +29,7 @@ def test_randomsensor():
 
         pop=Population(100,ng,0.8,0.05,0.1,gpo,sp.parse_sensor("(p v q)"),traces)
 
-        for i in range(0,100):
+        for i in range(0,1):
                 print "g",i
                 f=pop.generation()
                 m=0

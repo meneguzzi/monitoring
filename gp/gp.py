@@ -46,12 +46,15 @@ toolbox.register("compile", gp.compile, pset=pset)
 
 TRACES=monitor.generate_all_traces("examples/simple/simple.pddl")
 MODELSENSOR=Sensor(True)
+sp = Sensor_Parser()
 
 def evalSensor(s):
     print("s:",str(s))
-    print("e:",eval(str(s)))
-    sensor=eval(str(s))#toolbox.compile(expr=str(s))
+    # print("e:",eval(str(s)))
+    # sensor=eval(str(s))#toolbox.compile(expr=str(s))
+    sensor = sp.parse_sensor("("+str(s).replace("snot","-")+")")
     desired=evaluate_sensor_on_traces(TRACES,MODELSENSOR)
+    print "Evaluating sensor "+str(sensor)
     actual=evaluate_sensor_on_traces(TRACES,sensor)
 
     tp=set(desired[0]) & set(actual[0])

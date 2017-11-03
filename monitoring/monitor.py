@@ -30,6 +30,7 @@ def generate_all_traces(domain_file):
 
 
 def evaluate_sensor_on_traces(traces,sensor):
+    assert isinstance(sensor, Sensor)
     valid = []
     invalid = []
     for t in traces:

@@ -184,7 +184,7 @@ class Sensor_Parser():
         if stack:
             raise Exception('Missing close parentheses')
         if len(list) != 1:
-            raise Exception('Malformed expression')
+            raise Exception('Malformed expression: '+str)
         return list[0]
 
     def parse_sensor_file(self, filename):
@@ -202,14 +202,14 @@ class Sensor_Parser():
         elif str in Sensor.valid_ops:
             return str
         else:
-            raise "Invalid operator "+str
+            raise Exception("Invalid operator "+str)
 
     def parse_sensor(self, str):
         tokens = self.scan_tokens(str)
         if type(tokens) is list:
             return self.build_sensor(tokens)
         else:
-            raise 'Expression ' + str + ' does not match a sensor'
+            raise Exception('Expression ' + str + ' does not match a sensor')
 
     def build_sensor(self,tokens):
         # TODO Fix the nasty bit of code below...
