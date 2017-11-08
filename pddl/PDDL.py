@@ -168,6 +168,18 @@ class PDDL_Parser:
             newstate.append(tf)
         return newstate
 
+class PDDL_Planner:
+
+    def solve_file(self,domainfile, problemfile):
+        # Parser
+        parser = PDDL_Parser()
+        parser.parse_domain(domainfile)
+        parser.parse_problem(problemfile)
+        return self.solve(parser.actions,parser.state,(parser.positive_goals,parser.negative_goals))
+
+    def solve(self, domain,initial_state,goal_state):
+        raise NotImplementedError( "PDDL Planners need to implement solve" )
+
 # ==========================================
 # Main
 # ==========================================
