@@ -29,7 +29,16 @@ class Propositional_Planner_Test(unittest.TestCase):
 
     def test_solve_sat(self):
         planner = SAT_Planner()
-        self.assertIsNotNone(planner.solve_file('examples/dinner/dinner.pddl', 'examples/dinner/pb1.pddl'))
+        plan = planner.solve_file('examples/dinner/dinner.pddl', 'examples/dinner/pb1.pddl')
+        self.assertIsNotNone(plan)
+        self.assertEqual(3,len(plan))
+        # print plan
+        self.assertEqual(plan,
+            [ Action('wrap', [], [('quiet',)],[],[('present',)],[]),
+              Action('dolly', [], [('garbage',)],[],[],[('garbage',), ('quiet',)]),
+              Action('cook', [], [('clean',)],[],[('dinner',)],[])]
+
+        )
     #-------------------------------------------
     # Split propositions
     #-------------------------------------------

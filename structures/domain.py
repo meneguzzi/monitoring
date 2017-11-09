@@ -101,8 +101,8 @@ class Action:
         return hash((self.name,self.parameters)) # This should work even in the ground case.
 
     def __repr__(self):
-        return "<"+self.name+","+str(self.positive_preconditions)+","+str(self.negative_preconditions) + \
-               "," + str(self.del_effects) + "," + str(self.add_effects) + ","+str(self.cost) +  ">"
+        return "<"+self.name+","+str(self.parameters)+","+str(self.positive_preconditions)+","+str(self.negative_preconditions) + \
+               "," + str(self.add_effects) + "," + str(self.del_effects) + ","+str(self.cost) +  ">"
 
 
 class Trace():
