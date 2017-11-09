@@ -1,6 +1,7 @@
 import random
 from nodeGenerator import NodeGenerator
 import gpOps
+import functools
 from monitoring.monitor import evaluate_sensor_on_traces
 
 
@@ -43,24 +44,25 @@ class Population:
       s=0
       for ind in fitness:
           s += fitness[ind]
+      if s==0:
+          return random.choice(fitness.keys())  # return random individual otherwise
       r = random.random()*s
-      if s>0:
-          print "s bigger than 0!!!"
       s=0.0
       for ind in fitness:
           s+=fitness[ind]
           if s>=r:
               return ind
-      return random.choice(fitness.keys()) #return random individual otherwise
+
 
 
   def generation(self):
+      #print self.pop
       fitness=self.iterate() #a ind:fitnessValue map
 
       #normalize
-      s=reduce((lambda x,y: x+y),fitness.values())
+      s=functools.reduce((lambda x,y: x+y),fitness.values())
       if s!=0:
-          fitness={k:(v/s) for k,v in fitness.items()}  
+          fitness={k:(float(v)/s) for k,v in fitness.items()}
       else:
           fitness={k:0 for k,v in fitness.items()}
 
@@ -81,5 +83,5 @@ class Population:
           newGen.append(self.ng.addNode(None,1))
       #print "n",len(newGen)
       self.pop=newGen
-      return fitness
+      return newGen
       
