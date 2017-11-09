@@ -49,14 +49,14 @@ class GPOps:
     okNodes=False
     root1=root1.copyNode(None)
     root2=root2.copyNode(None)
-    print root1.compile()
+    #print root1.compile()
     while not okNodes:
       n1=self.pickNode(root1)
       n2=self.pickNode(root2)
       if (not n1.parent==None) and (not n2.parent==None) and (not n1.parent.children[2]==n1) and (not n2.parent.children[2]==n2):
           okNodes=True
-      else:
-          print "not ok  root"
+    #  else:
+          #print "not ok  root"
     n1.parent.children[n1.parent.children.index(n1)]=n2
     n2.parent.children[n2.parent.children.index(n2)]=n1
     t=n1.parent
@@ -64,6 +64,6 @@ class GPOps:
     n2.parent=t
     n1.resetCompilation()
     n2.resetCompilation()
-    print root1.compile()
+    #print root1.compile()
     return [root1,root2]
 
