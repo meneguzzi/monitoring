@@ -2,16 +2,10 @@
 # Four spaces as indentation [no tabs]
 
 from pddl.PDDL import PDDL_Parser
+from pddl.PDDL import PDDL_Planner
 
 
-class Propositional_Planner:
-
-    def solve_file(self,domainfile, problemfile):
-        # Parser
-        parser = PDDL_Parser()
-        parser.parse_domain(domainfile)
-        parser.parse_problem(problemfile)
-        return self.solve(parser.actions,parser.state,(parser.positive_goals,parser.negative_goals))
+class Propositional_Planner(PDDL_Planner):
 
     #-----------------------------------------------
     # Solve
