@@ -6,15 +6,19 @@ from structures.domain import Domain
 
 from itertools import combinations
 
+from z3 import *
+
 class SAT_Planner(PDDL_Planner):
 
     def solve(self, domain, initial_state, goal_state):
         # encode the problem
-        limit = 4
+        limit = 5
         for length in range(0,limit):
             formula = self.encode_formula(domain, initial_state, goal_state, length)
             print formula
-        return None
+        return True
+
+
 
     def encode_formula(self, actions, initial_state, goal_state, plan_length):
         # Parsed data
@@ -43,6 +47,7 @@ class SAT_Planner(PDDL_Planner):
         pred_declaration = ""
         action_formula = ""
         exclusion_axiom = ""
+        frame_axioms = ""
 
         for i in range(0,plan_length+1):
             for p in preds:
@@ -58,11 +63,36 @@ class SAT_Planner(PDDL_Planner):
 
             #Encode exclusion axioms
             for (a1,a2) in combinations(action_names,2):
-                exclusion_axiom += self.lnot(self.lor("{0} {1}".format(a1,a2) ))
+                exclusion_axiom += self.lor("{0} {1}".format(self.lnot(a1),self.lnot(a2)) )
 
 
             #Encode frame axioms
             #TODO Still need to encode frame axioms
+            for p in preds:
+                add_eff_actions = []
+                del_eff_actions = []
+                for a in actions:
+                    if p in a.add_effects:
+                        add_eff_actions.append(a)
+                    if p in a.del_effects:
+                        del_eff_actions.append(a)
+
+                ant = self.land(self.lnot(self.prop_at(p, i)) + " " + self.prop_at(p, i+1))
+                cons = ""
+                for a in add_eff_actions:
+                    cons+= self.action_prop_at(a,i)+" "
+                if cons != "":
+                    cons = self.lor(cons)
+                    frame_axioms += self.limply(ant,cons)
+
+                ant = self.land(self.prop_at(p, i) + " " + self.lnot(self.prop_at(p, i+1)))
+                cons = ""
+                for a in del_eff_actions:
+                    cons += self.action_prop_at(a, i)+" "
+                if cons != "":
+                    cons = self.lor(cons)
+                    frame_axioms += self.limply(ant, cons)
+
 
 
             # Build Z3 formulas
@@ -74,6 +104,7 @@ class SAT_Planner(PDDL_Planner):
         st += self.z3_assert(goal_formula) + "\n"
         st += self.z3_assert(self.land(action_formula))+"\n"
         st += self.z3_assert(self.land(exclusion_axiom))+"\n"
+        st += self.z3_assert(self.land(frame_axioms)) + "\n"
         return st
 
     def action(self,action,t):

@@ -18,6 +18,11 @@
 (declare-const garbage_3 Bool)
 (declare-const clean_3 Bool)
 (declare-const present_3 Bool)
+(declare-const dinner_4 Bool)
+(declare-const quiet_4 Bool)
+(declare-const garbage_4 Bool)
+(declare-const clean_4 Bool)
+(declare-const present_4 Bool)
 (declare-const cook_0 Bool)
 (declare-const wrap_0 Bool)
 (declare-const carry_0 Bool)
@@ -30,12 +35,16 @@
 (declare-const wrap_2 Bool)
 (declare-const carry_2 Bool)
 (declare-const dolly_2 Bool)
+(declare-const cook_3 Bool)
+(declare-const wrap_3 Bool)
+(declare-const carry_3 Bool)
+(declare-const dolly_3 Bool)
 
 (assert (and garbage_0 clean_0 quiet_0 ))
-(assert (and dinner_3 present_3 (not garbage_3) ))
-(assert (and (implies cook_0 (and (and clean_0 ) (and dinner_1 ))) (implies wrap_0 (and (and quiet_0 ) (and present_1 ))) (implies carry_0 (and (and garbage_0 ) (and (not garbage_1) (not clean_1) ))) (implies dolly_0 (and (and garbage_0 ) (and (not garbage_1) (not quiet_1) ))) (implies cook_1 (and (and clean_1 ) (and dinner_2 ))) (implies wrap_1 (and (and quiet_1 ) (and present_2 ))) (implies carry_1 (and (and garbage_1 ) (and (not garbage_2) (not clean_2) ))) (implies dolly_1 (and (and garbage_1 ) (and (not garbage_2) (not quiet_2) ))) (implies cook_2 (and (and clean_2 ) (and dinner_3 ))) (implies wrap_2 (and (and quiet_2 ) (and present_3 ))) (implies carry_2 (and (and garbage_2 ) (and (not garbage_3) (not clean_3) ))) (implies dolly_2 (and (and garbage_2 ) (and (not garbage_3) (not quiet_3) ))) ))
-(assert (and (not (or cook_0 wrap_0))(not (or cook_0 carry_0))(not (or cook_0 dolly_0))(not (or wrap_0 carry_0))(not (or wrap_0 dolly_0))(not (or carry_0 dolly_0))(not (or cook_1 wrap_1))(not (or cook_1 carry_1))(not (or cook_1 dolly_1))(not (or wrap_1 carry_1))(not (or wrap_1 dolly_1))(not (or carry_1 dolly_1))(not (or cook_2 wrap_2))(not (or cook_2 carry_2))(not (or cook_2 dolly_2))(not (or wrap_2 carry_2))(not (or wrap_2 dolly_2))(not (or carry_2 dolly_2))))
-
+(assert (and dinner_4 present_4 (not garbage_4) ))
+(assert (and (implies cook_0 (and (and clean_0 ) (and dinner_1 ))) (implies wrap_0 (and (and quiet_0 ) (and present_1 ))) (implies carry_0 (and (and garbage_0 ) (and (not garbage_1) (not clean_1) ))) (implies dolly_0 (and (and garbage_0 ) (and (not garbage_1) (not quiet_1) ))) (implies cook_1 (and (and clean_1 ) (and dinner_2 ))) (implies wrap_1 (and (and quiet_1 ) (and present_2 ))) (implies carry_1 (and (and garbage_1 ) (and (not garbage_2) (not clean_2) ))) (implies dolly_1 (and (and garbage_1 ) (and (not garbage_2) (not quiet_2) ))) (implies cook_2 (and (and clean_2 ) (and dinner_3 ))) (implies wrap_2 (and (and quiet_2 ) (and present_3 ))) (implies carry_2 (and (and garbage_2 ) (and (not garbage_3) (not clean_3) ))) (implies dolly_2 (and (and garbage_2 ) (and (not garbage_3) (not quiet_3) ))) (implies cook_3 (and (and clean_3 ) (and dinner_4 ))) (implies wrap_3 (and (and quiet_3 ) (and present_4 ))) (implies carry_3 (and (and garbage_3 ) (and (not garbage_4) (not clean_4) ))) (implies dolly_3 (and (and garbage_3 ) (and (not garbage_4) (not quiet_4) ))) ))
+(assert (and (or (not cook_0) (not wrap_0))(or (not cook_0) (not carry_0))(or (not cook_0) (not dolly_0))(or (not wrap_0) (not carry_0))(or (not wrap_0) (not dolly_0))(or (not carry_0) (not dolly_0))(or (not cook_1) (not wrap_1))(or (not cook_1) (not carry_1))(or (not cook_1) (not dolly_1))(or (not wrap_1) (not carry_1))(or (not wrap_1) (not dolly_1))(or (not carry_1) (not dolly_1))(or (not cook_2) (not wrap_2))(or (not cook_2) (not carry_2))(or (not cook_2) (not dolly_2))(or (not wrap_2) (not carry_2))(or (not wrap_2) (not dolly_2))(or (not carry_2) (not dolly_2))(or (not cook_3) (not wrap_3))(or (not cook_3) (not carry_3))(or (not cook_3) (not dolly_3))(or (not wrap_3) (not carry_3))(or (not wrap_3) (not dolly_3))(or (not carry_3) (not dolly_3))))
+(assert (and (implies (and (not dinner_0) dinner_1) (or cook_0 ))(implies (and quiet_0 (not quiet_1)) (or dolly_0 ))(implies (and garbage_0 (not garbage_1)) (or carry_0 dolly_0 ))(implies (and clean_0 (not clean_1)) (or carry_0 ))(implies (and (not present_0) present_1) (or wrap_0 ))(implies (and (not dinner_1) dinner_2) (or cook_1 ))(implies (and quiet_1 (not quiet_2)) (or dolly_1 ))(implies (and garbage_1 (not garbage_2)) (or carry_1 dolly_1 ))(implies (and clean_1 (not clean_2)) (or carry_1 ))(implies (and (not present_1) present_2) (or wrap_1 ))(implies (and (not dinner_2) dinner_3) (or cook_2 ))(implies (and quiet_2 (not quiet_3)) (or dolly_2 ))(implies (and garbage_2 (not garbage_3)) (or carry_2 dolly_2 ))(implies (and clean_2 (not clean_3)) (or carry_2 ))(implies (and (not present_2) present_3) (or wrap_2 ))(implies (and (not dinner_3) dinner_4) (or cook_3 ))(implies (and quiet_3 (not quiet_4)) (or dolly_3 ))(implies (and garbage_3 (not garbage_4)) (or carry_3 dolly_3 ))(implies (and clean_3 (not clean_4)) (or carry_3 ))(implies (and (not present_3) present_4) (or wrap_3 ))))
 
 
 (check-sat)
