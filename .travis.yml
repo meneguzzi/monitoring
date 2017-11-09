@@ -19,9 +19,9 @@ before_install:
   # - sudo apt-get install -y python-z3
   # - brew install z3
 addons:
-	apt:
-		packages:
-			- python-z3
+  apt:
+    packages:
+      - python-z3
 # command to install dependencies
 install:
   - pip install -r requirements.txt
