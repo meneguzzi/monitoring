@@ -31,15 +31,22 @@ class Population:
         tp=set(desired[0]) & set(actual[0])
         tn=set(desired[1]) & set(actual[1])
 
-        fp=set(actual[0]) - set(desired[1])
-        fn=set(actual[1]) - set(desired[0])
+        fp=set(actual[0]) & set(desired[1])
+        fn=set(actual[1]) & set(desired[0])
 
-        fitness[p]=(len(tp)+len(tn)-len(fp)-len(fn))
+        shouldBeFitness=(len(tp)+len(tn)-len(fp)-len(fn))
+        fitness[p]= shouldBeFitness if shouldBeFitness>0 else 0
     return fitness
 
   def pickIndividual(self,fitness):
-      r=random.random()
+
       s=0
+      for ind in fitness:
+          s += fitness[ind]
+      r = random.random()*s
+      if s>0:
+          print "s bigger than 0!!!"
+      s=0.0
       for ind in fitness:
           s+=fitness[ind]
           if s>=r:
@@ -55,8 +62,11 @@ class Population:
       if s!=0:
           fitness={k:(v/s) for k,v in fitness.items()}  
       else:
-          fitness={k:0 for k,v in fitness.items()}    
+          fitness={k:0 for k,v in fitness.items()}
 
+      return fitness
+
+  def updateGen(self,fitness):
       newGen=[]
       for i in range(0,int(self.num*self.reproducePercent)):
           newGen.append(self.pickIndividual(fitness))

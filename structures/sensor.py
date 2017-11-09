@@ -42,7 +42,7 @@ class Sensor():
             if op=="spath":
                 return Sensor(Sensor.generate_sensor(domain, depth - 1), random.randint(1, 10), Sensor.generate_sensor(domain, depth - 1))
             if op=="terminal":
-                return Sensor(random.choice(af))
+                return Sensor((random.choice(af),))
 
 
     @property
