@@ -168,6 +168,22 @@ class SAT_Planner(PDDL_Planner):
 
         return self.props[key]
 
+# ==========================================
+# Main
+# ==========================================
+if __name__ == '__main__':
+    import sys
+    domain = sys.argv[1]
+    problem = sys.argv[2]
+    planner = SAT_Planner()
+    plan = planner.solve_file(domain, problem)
+    if plan:
+        print('plan:')
+        for act in plan:
+            print(act)
+    else:
+        print('No plan was found')
+
     ## Old code
     # def encode_formula(self, actions, initial_state, goal_state, plan_length):
     #     # Parsed data

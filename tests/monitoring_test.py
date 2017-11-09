@@ -85,6 +85,7 @@ class MonitoringTestCase(unittest.TestCase):
         simplePDDL = 'examples/simple/simple.pddl'
         sp = Sensor_Parser()
         traces = monitoring.monitor.generate_all_traces(simplePDDL)
+        print traces
 
         # a=evaluate_sensor_on_traces(traces,sp.parse_sensor("(-((q) v (p)))"))
         a = evaluate_sensor_on_traces(traces, sp.parse_sensor("(-((q) ^ (p)))"))
@@ -122,6 +123,27 @@ class MonitoringTestCase(unittest.TestCase):
         print "Invalid traces for sensor a: " + str(len(set(a[1])))
         self.assertNotEqual(len(set(a[1])), len(set(b[1])))
 
+    def test_evaluate_sensors_on_psr_domain(self):
+        psrPDDL = 'examples/psr-small/domain01.pddl'
+        sp = Sensor_Parser()
+        print "Generating traces for "+psrPDDL
+        traces = monitoring.monitor.generate_all_traces(psrPDDL)
+        print "Done generating traces"
+        a = evaluate_sensor_on_traces(traces, sp.parse_sensor("((NOT-UPDATED-CB1) v (UPDATED-CB1))"))
+        b = evaluate_sensor_on_traces(traces, sp.parse_sensor("((NOT-UPDATED-CB1) v (NOT-CLOSED-CB1))"))
+
+        print "Sensor a's valid traces " + str(a[0])
+        print "Sensor b's valid traces " + str(b[0])
+        print "Intersection between two sensors: " + str(len(set(a[0]) & set(b[0])))
+        print "Valid traces for sensor a: " + str(len(set(a[0])))
+        print "Valid traces for sensor b: " + str(len(set(b[0])))
+        self.assertNotEqual(len(set(a[0])), len(set(b[0])))
+
+        print "Sensor a's invalid traces " + str(a[1])
+        print "Sensor b's invalid traces " + str(b[1])
+        print "Intersection of invalid traces: " + str(len(set(a[1]) & set(b[1])))
+        print "Invalid traces for sensor a: " + str(len(set(a[1])))
+        self.assertNotEqual(len(set(a[1])), len(set(b[1])))
 
 
 if __name__ == '__main__':

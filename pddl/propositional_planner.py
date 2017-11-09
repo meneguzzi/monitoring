@@ -77,7 +77,7 @@ if __name__ == '__main__':
     domain = sys.argv[1]
     problem = sys.argv[2]
     planner = Propositional_Planner()
-    plan = planner.solve(domain, problem)
+    plan = planner.solve_file(domain, problem)
     if plan:
         print('plan:')
         for act in plan:
