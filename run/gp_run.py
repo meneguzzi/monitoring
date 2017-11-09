@@ -1,10 +1,12 @@
 
 from structures.domain import Domain, Action, State, Trace
 from structures.sensor import Sensor, Sensor_Parser
+import structures.sensor
 from pddl.PDDL import PDDL_Parser
 from gp.nodeGenerator import NodeGenerator
 from gp.population import Population
 from gp.gpOps import GPOps
+from gp.node import Node
 import monitoring.monitor
 from monitoring.monitor import evaluate_sensor_on_traces
 
@@ -17,19 +19,42 @@ def test_randomsensor():
         parser.parse_problem('examples/simple/pb1.pddl')
         domain = parser.domain.groundify()
         terms=[]
-        for i in range(0,15):
-          terms.append(Sensor.generate_sensor(domain, 1))
+        #for i in range(0,15):
+        #  terms.append(Sensor.generate_sensor(domain, 1))
+        #print terms
+        terms=[Sensor("q"),Sensor("p")]
         print terms
         ng=NodeGenerator(terms,1,5,2,5)
 
         traces=monitoring.monitor.generate_all_traces(simplePDDL)
+#generate a dummy node
+        root=Node(None,None,1)
+        child=Node(root,structures.sensor.sor,2)
+        root.setChild(0,child)
+        gc1=Node(child,terms[0],0)
+        gc2=Node(child,terms[1],0)
+        child.setChild(0,gc1)
+        child.setChild(1,gc2)
+        print root.compile()
 
         sp=Sensor_Parser()
         gpo=GPOps(terms,1,5,1,4)
 
         pop=Population(100,ng,0.8,0.05,0.1,gpo,sp.parse_sensor("(p v q)"),traces)
+        pop.pop[0]=root #assign manually generated node
+#and deal with it manually
+        d=evaluate_sensor_on_traces(traces,sp.parse_sensor("(p v q)"))
+        a=evaluate_sensor_on_traces(traces,root.compile())
+        tp=set(d[0]) & set(a[0])
+        tn=set(d[1]) & set(a[1])
+        fp=set(a[0]) - set(d[1])
+        fn=set(a[1]) - set(d[0])
+        print len(tp)+len(tn)-len(fp)-len(fn)
+        print d[0]
+        print a[0]
 
-        for i in range(0,1):
+"""
+        for i in range(0,2):
                 print "g",i
                 f=pop.generation()
                 m=0
@@ -42,7 +67,7 @@ def test_randomsensor():
 
 
         print pop.generation()
-
+"""
 
 
 if __name__ == '__main__':
