@@ -23,7 +23,7 @@ def test_randomsensor():
         terms=[]
         for i in range(0,15):
          terms.append(Sensor.generate_sensor(domain, 1))
-        #print terms
+        print terms
         #terms=[Sensor(("q",)),Sensor(("p",))]
         #print terms
         ng=NodeGenerator(terms,1,5,2,5)
@@ -77,9 +77,23 @@ def test_randomsensor():
                         print m,p.compile()
                 pop.updateGen(f)
 
-
+        m=0
+        p=None
         for k,v in pop.generation().iteritems():
-                print v,k.compile()
+                if v > m:
+                        m = v
+                        p = k
+        d = evaluate_sensor_on_traces(traces,sp.parse_sensor("((p) v (q))"))
+        a = evaluate_sensor_on_traces(traces,p.compile())
+        tp=set(d[0]) & set(a[0])
+        tn=set(d[1]) & set(a[1])
+        fp=set(a[0]) & set(d[1])
+        fn=set(a[1]) & set(d[0])
+        print len(tp)
+        print len(fp)
+        print len(tn)
+        print len(fn)
+        print len(tp)+len(tn)-len(fp)-len(fn)
 
 
 
