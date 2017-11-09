@@ -78,7 +78,7 @@ def test_randomsensor():
                 pop.updateGen(f)
 
 
-        for k,v in pop.generation():
+        for k,v in pop.generation().iteritems():
                 print v,k.compile()
 
 
