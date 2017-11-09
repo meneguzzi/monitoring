@@ -13,12 +13,12 @@ python:
 #  - "nightly"
 # command to install z3
 before_install:
-  - sudo apt-get -qq update
+  # - sudo apt-get -qq update
+  - sudo apt-get -q update
   - sudo apt-get install -y python-z3
 # command to install dependencies
 install:
   - pip install -r requirements.txt
-  - 
 # command to run tests
 script:
 #  - pytest # or py.test for Python versions 3.5 and below
