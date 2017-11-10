@@ -141,15 +141,21 @@ def test_randomsensor_psr():
             p = k
     d = evaluate_sensor_on_traces(traces, sp.parse_sensor("((NOT-UPDATED-CB1) v (UPDATED-CB1))"))
     a = evaluate_sensor_on_traces(traces, p.compile())
+
+    total = len(traces)
     tp = set(d[0]) & set(a[0])
     tn = set(d[1]) & set(a[1])
     fp = set(a[0]) & set(d[1])
     fn = set(a[1]) & set(d[0])
-    print len(tp)
-    print len(fp)
-    print len(tn)
-    print len(fn)
-    print len(tp) + len(tn) - len(fp) - len(fn)
+    # print len(tp)
+    # print len(fp)
+    # print len(tn)
+    # print len(fn)
+    # print len(tp) + len(tn) - len(fp) - len(fn)
+    print "TPR: {0}".format(tp/total)
+    print "TNR: {0}".format(tn / total)
+    print "FPR: {0}".format(fp / total)
+    print "FNR: {0}".format(fn / total)
 
 
 if __name__ == '__main__':
