@@ -8,6 +8,7 @@ from pddl.sat_planner import SAT_Planner
 import monitoring.monitor
 from monitoring.monitor import evaluate_sensor_on_traces, generate_all_traces, sample_traces
 import time
+import sys
 
 
 class MonitoringTestCase(unittest.TestCase):
@@ -46,6 +47,7 @@ class MonitoringTestCase(unittest.TestCase):
 
         sigma1 = parser.parse_sensor(str(sigma))
         print sigma1
+        self.assertEqual(sigma, sigma1)
 
         sigma2 = parser.parse_sensor('((p) v (q))')
         print sigma2
@@ -83,7 +85,7 @@ class MonitoringTestCase(unittest.TestCase):
         print str(sigma3) + " should be a model of " + str(s2) + " for trace " + str([a1])
         self.assertTrue(sigma3.is_model_of([a1],s2))
 
- 
+    @unittest.skipUnless(sys.platform.startswith("linux"), "Only test in Travis")
     def test_evaluate_sensor_on_traces(self):
         """ test demorgan"""
         simplePDDL = 'examples/simple/simple.pddl'
@@ -127,6 +129,7 @@ class MonitoringTestCase(unittest.TestCase):
         print "Invalid traces for sensor a: " + str(len(set(a[1])))
         self.assertNotEqual(len(set(a[1])), len(set(b[1])))
 
+    @unittest.skipUnless(sys.platform.startswith("linux"), "Only test in Travis")
     def test_evaluate_sensors_on_psr_domain(self):
         psrPDDL = 'examples/psr-small/domain01.pddl'
         sp = Sensor_Parser()
@@ -152,6 +155,7 @@ class MonitoringTestCase(unittest.TestCase):
         print "Invalid traces for sensor a: " + str(len(set(a[1])))
         self.assertNotEqual(len(set(a[1])), len(set(b[1])))
 
+    @unittest.skipUnless(sys.platform.startswith("linux"), "Only test in Travis")
     def test_generate_all_traces(self):
         simplePDDL = 'examples/simple/simple.pddl'
 
@@ -166,6 +170,7 @@ class MonitoringTestCase(unittest.TestCase):
         # end = time.time()
         # print "SAT planner took {0}s to generate traces".format(end - start)
 
+    @unittest.skipUnless(sys.platform.startswith("linux"), "Only test in Travis")
     def test_sample_traces(self):
         pddl_file = 'examples/simple/simple.pddl'
 

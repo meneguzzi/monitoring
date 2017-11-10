@@ -92,7 +92,13 @@ class Sensor():
             s += self.print_op()
             s += str(self.lhs)
         else:
-            s += str(self.lhs) if isinstance(self.lhs, Sensor) else str(self.lhs[0])
+            # s += str(self.lhs) if isinstance(self.lhs, Sensor) else str(self.lhs[0])
+            if isinstance(self.lhs, Sensor):
+                s += str(self.lhs)
+            elif isinstance(self.lhs, tuple):
+                s += self.lhs[0]
+            else:
+                s += self.lhs
             s += " "+str(self.print_op())+" " if self.op != None else ""
             s += str(self.rhs) if self.rhs!= None else ""
 
