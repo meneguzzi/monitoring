@@ -168,7 +168,7 @@ class PDDL_Parser:
             newstate.append(tf)
         return newstate
 
-class PDDL_Planner:
+class PDDL_Planner(object):
 
     def solve_file(self,domainfile, problemfile):
         # Parser
@@ -177,8 +177,66 @@ class PDDL_Planner:
         parser.parse_problem(problemfile)
         return self.solve(parser.actions,parser.state,(parser.positive_goals,parser.negative_goals))
 
-    def solve(self, domain,initial_state,goal_state):
+    def solvable(self, domain, initial_state, goal_state):
+        """"Computes whether the problem posed by initial_state, goal_state is solvable by reachability analysis"""
+        last_state = set([])
+        reachable_literals = set(initial_state)
+        positive_goals = set(goal_state[0])
+        actions = domain
+
+        positive_effects = set([])
+        negative_effects = set([])
+        for a in actions:
+            positive_effects = positive_effects.union(set(a.add_effects))
+            negative_effects = negative_effects.union(set(a.del_effects))
+        # First check the obvious stuff
+        for p in goal_state[0]:
+            if p not in reachable_literals and p not in positive_effects:
+                return False
+        for p in goal_state[1]:
+            if p in reachable_literals and p not in negative_effects:
+                return False
+
+        while last_state != reachable_literals:
+            last_state = reachable_literals.copy()
+            if positive_goals.issubset(reachable_literals):
+                return True
+            for a in actions:
+                if a.applicable(reachable_literals):
+                    reachable_literals = reachable_literals.union(a.add_effects)
+
+        return False
+
+
+    def solve(self, domain, initial_state, goal_state):
         raise NotImplementedError( "PDDL Planners need to implement solve" )
+
+    # -----------------------------------------------
+    # Applicable
+    # -----------------------------------------------
+
+    def applicable(self, state, positive, negative):
+        for i in positive:
+            if i not in state:
+                return False
+        for i in negative:
+            if i in state:
+                return False
+        return True
+
+    # -----------------------------------------------
+    # Apply
+    # -----------------------------------------------
+
+    def apply(self, state, positive, negative):
+        new_state = []
+        for i in state:
+            if i not in negative:
+                new_state.append(i)
+        for i in positive:
+            if i not in new_state:
+                new_state.append(i)
+        return new_state
 
 # ==========================================
 # Main

@@ -42,33 +42,6 @@ class Propositional_Planner(PDDL_Planner):
                         fringe.append((act, plan))
         return None
 
-    #-----------------------------------------------
-    # Applicable
-    #-----------------------------------------------
-
-    def applicable(self, state, positive, negative):
-        for i in positive:
-            if i not in state:
-                return False
-        for i in negative:
-            if i in state:
-                return False
-        return True
-
-    #-----------------------------------------------
-    # Apply
-    #-----------------------------------------------
-
-    def apply(self, state, positive, negative):
-        new_state = []
-        for i in state:
-            if i not in negative:
-                new_state.append(i)
-        for i in positive:
-            if i not in new_state:
-              new_state.append(i)
-        return new_state
-
 # ==========================================
 # Main
 # ==========================================

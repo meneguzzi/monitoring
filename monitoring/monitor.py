@@ -1,28 +1,58 @@
-from pddl.PDDL import PDDL_Parser
+from pddl.PDDL import PDDL_Parser, PDDL_Planner
 from pddl.propositional_planner import Propositional_Planner
 from structures.domain import State,Trace, Domain
 from structures.sensor import Sensor, Sensor_Parser
-from itertools import product
+from itertools import product, permutations
 
+import random
 
 class MonitorSynthesizer():
 
     def __init__(self):
         pass
 
-
-def generate_all_traces(domain_file):
-    traces = []
+def get_domain(domain_file):
     pddlparser = PDDL_Parser()
     pddlparser.parse_domain(domain_file)
     pdomain = pddlparser.domain.groundify()
-    planner = Propositional_Planner()
-    for s0, sg in product(pdomain.generate_state_space(), repeat=2):
+    return pdomain
+
+def generate_traces_for_population(domain,population,ignore_empty,planner):
+    traces = []
+    for s0, sg in population:
+        if planner.solvable(domain, s0, (sg, [])):
+            plan = planner.solve(domain, s0, (sg, []))
+            if plan is not None:
+                traces.append((s0, tuple(plan), sg))
+    return traces
+
+
+def sample_traces(domain_file, max_samples=100, ignore_empty = True, planner = Propositional_Planner()):
+    traces = []
+    domain = get_domain(domain_file)
+
+    population = [(s0,sg) for s0, sg in permutations(domain.generate_state_space(), 2)]
+    max_samples = min(len(population),max_samples)
+    population = random.sample(population, max_samples)
+    return generate_traces_for_population(domain,population,ignore_empty,planner)
+    # traces = []
+    # for s0, sg in population:
+    #     if planner.solvable(domain,s0,(sg,[])):
+    #         plan = planner.solve(domain,s0, (sg, []) )
+    #         if plan is not None:
+    #             traces.append((s0,tuple(plan),sg))
+    # return traces
+
+def generate_all_traces(domain_file, planner = Propositional_Planner()):
+    traces = []
+    domain = get_domain(domain_file)
+    for s0, sg in product(domain.generate_state_space(), repeat=2):
         s0l = list(s0)
         sgl = list(sg)
-        plan = planner.solve(pdomain .actions.values(),s0l,(sgl,[]))
-        if plan is not None:
-            traces.append((s0,tuple(plan),sg))
+        if planner.solvable(domain,s0l,(sgl,[])):
+            plan = planner.solve(domain.actions.values(),s0l,(sgl,[]))
+            if plan is not None:
+                traces.append((s0,tuple(plan),sg))
         else:
             pass
             #print "No plan between "+str(s0)+" and "+str(sg)

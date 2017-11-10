@@ -3,7 +3,7 @@
 
 import unittest
 from structures.domain import Action
-from pddl.PDDL import PDDL_Parser
+from pddl.PDDL import PDDL_Parser, PDDL_Planner
 
 # ==========================================
 # Test PDDL
@@ -94,6 +94,19 @@ class PDDL_Test(unittest.TestCase):
         # self.assertEqual(parser.state, [['garbage'], ['clean'], ['quiet']])
         # self.assertEqual(parser.positive_goals, [['dinner'], ['present']])
         # self.assertEqual(parser.negative_goals, [['garbage']])
+
+    def test_reachability_analysis(self):
+        parser = PDDL_Parser()
+        parser.parse_domain('examples/dinner/dinner.pddl')
+        parser.parse_problem('examples/dinner/pb1.pddl')
+        planner = PDDL_Planner()
+        self.assertTrue(planner.solvable(parser.domain,parser.initial_state,parser.goal))
+        initial_state = [p for p in parser.initial_state]
+        initial_state.remove(("clean",))
+        self.assertFalse(planner.solvable(parser.domain,initial_state,parser.goal))
+        domain = [a for a in parser.domain]
+        domain.pop(0)
+        self.assertFalse(planner.solvable(domain, initial_state, parser.goal))
 
 if __name__ == '__main__':
     unittest.main()

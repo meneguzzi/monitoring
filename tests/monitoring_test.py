@@ -3,8 +3,12 @@ import unittest
 from structures.domain import Domain, Action, State, Trace
 from structures.sensor import Sensor, Sensor_Parser
 from pddl.PDDL import PDDL_Parser
+from pddl.propositional_planner import Propositional_Planner
+from pddl.sat_planner import SAT_Planner
 import monitoring.monitor
-from monitoring.monitor import evaluate_sensor_on_traces
+from monitoring.monitor import evaluate_sensor_on_traces, generate_all_traces, sample_traces
+import time
+
 
 class MonitoringTestCase(unittest.TestCase):
 
@@ -126,11 +130,14 @@ class MonitoringTestCase(unittest.TestCase):
     def test_evaluate_sensors_on_psr_domain(self):
         psrPDDL = 'examples/psr-small/domain01.pddl'
         sp = Sensor_Parser()
-        print "Generating traces for "+psrPDDL
-        traces = monitoring.monitor.generate_all_traces(psrPDDL)
-        print "Done generating traces"
+        samples = 1000
+        print "Generating  {0} traces for {1}".format(samples,psrPDDL)
+        # Since this domain is too large, we need to sample
+        traces = monitoring.monitor.sample_traces(psrPDDL, samples)
+        # traces = monitoring.monitor.generate_all_traces(psrPDDL)
+        print "Generated {0} valid samples from a population of {1} states".format(len(traces),samples)
         a = evaluate_sensor_on_traces(traces, sp.parse_sensor("((NOT-UPDATED-CB1) v (UPDATED-CB1))"))
-        b = evaluate_sensor_on_traces(traces, sp.parse_sensor("((NOT-UPDATED-CB1) v (NOT-CLOSED-CB1))"))
+        b = evaluate_sensor_on_traces(traces, sp.parse_sensor("((NOT-UPDATED-CB1) ^ (NOT-CLOSED-CB1))"))
 
         print "Sensor a's valid traces " + str(a[0])
         print "Sensor b's valid traces " + str(b[0])
@@ -144,6 +151,34 @@ class MonitoringTestCase(unittest.TestCase):
         print "Intersection of invalid traces: " + str(len(set(a[1]) & set(b[1])))
         print "Invalid traces for sensor a: " + str(len(set(a[1])))
         self.assertNotEqual(len(set(a[1])), len(set(b[1])))
+
+    def test_generate_all_traces(self):
+        simplePDDL = 'examples/simple/simple.pddl'
+
+        start = time.time()
+        generate_all_traces(simplePDDL,Propositional_Planner())
+        end = time.time()
+        print "Search planner took {0}s to generate traces".format(end - start)
+
+        # SAT is much slower, so no need to waste testing time here
+        # start = time.time()
+        # generate_all_traces(simplePDDL, SAT_Planner())
+        # end = time.time()
+        # print "SAT planner took {0}s to generate traces".format(end - start)
+
+    def test_sample_traces(self):
+        pddl_file = 'examples/simple/simple.pddl'
+
+        start = time.time()
+        sample_traces(pddl_file,100)
+        end = time.time()
+        print "Trace sample took {0}s for {1}".format(end - start, pddl_file)
+
+        pddl_file = 'examples/psr-small/domain01.pddl'
+        start = time.time()
+        sample_traces(pddl_file,100)
+        end = time.time()
+        print "Trace sample took {0}s for {1}".format(end - start, pddl_file)
 
 
 if __name__ == '__main__':

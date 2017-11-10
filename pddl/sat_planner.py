@@ -10,10 +10,11 @@ from z3 import *
 
 class SAT_Planner(PDDL_Planner):
 
-    def __init__(self):
+    def __init__(self, verbose = False):
         self.props = dict()
         self.action_map = dict()
         self.max_length = 20
+        self.verbose = verbose
 
 
     def solve(self, domain, initial_state, goal_state):
@@ -26,13 +27,13 @@ class SAT_Planner(PDDL_Planner):
             # print s.to_smt2()
             # print s
             if s.check() == sat:
-                print "Model found with length {0}".format(length)
+                if self.verbose: print "Model found with length {0}".format(length)
                 # print s.model()
                 plan = self.extract_plan(s.model(),length)
                 # print plan
                 return plan
             else:
-                print "No model found with length {0}".format(length)
+                if self.verbose: print "No model found with length {0}".format(length)
         return None
 
 

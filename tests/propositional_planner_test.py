@@ -39,9 +39,9 @@ class Propositional_Planner_Test(unittest.TestCase):
               Action('cook', [], [('clean',)],[],[('dinner',)],[])]
 
         )
-    #-------------------------------------------
-    # Split propositions
-    #-------------------------------------------
+
+    def test_benchmark_planners(self):
+        pass
 
 if __name__ == '__main__':
     unittest.main()

@@ -168,7 +168,7 @@ class Sensor_Parser():
         # Tokenize
         stack = []
         list = []
-        for t in re.findall(r'[()]|[^\s()]+', str):
+        for t in re.findall(r'[()]|[^\s()]+', str.lower()):
             if t == '(':
                 stack.append(list)
                 list = []

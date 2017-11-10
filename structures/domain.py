@@ -32,6 +32,9 @@ class Domain():
     def groundify(self):
         return Domain([action.groundify() for action in self.actions.values()])
 
+    def __iter__(self):
+        return iter(self.actions.values())
+
     def __getitem__(self, item):
         return self.actions[item]
 
