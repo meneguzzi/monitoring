@@ -16,7 +16,6 @@ class SAT_Planner(PDDL_Planner):
         self.max_length = 20
         self.verbose = verbose
 
-
     def solve(self, domain, initial_state, goal_state):
         # encode the problem
         for length in range(0,self.max_length):

@@ -12,10 +12,13 @@ from pddl.PDDL import PDDL_Parser
 def getTerminalSensors(domain,num):
     return Sensor.generate_sensor(domain, num)
 
-
+# TODO Teach Nir Oren the value of writing generic code
+# TODO Teach Nir Oren the scourge of hard coded constants
 parser = PDDL_Parser()
-parser.parse_domain('examples/simple/simple.pddl')
-parser.parse_problem('examples/simple/pb1.pddl')
+# parser.parse_domain('examples/simple/simple.pddl')
+# parser.parse_problem('examples/simple/pb1.pddl')
+parser.parse_domain('examples/psr-small/domain01.pddl')
+parser.parse_problem('examples/psr-small/task01.pddl')
 domain = parser.domain.groundify()
 
 """create the pset"""
@@ -44,7 +47,9 @@ toolbox.register("individual", tools.initIterate, creator.Individual, toolbox.ex
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 toolbox.register("compile", gp.compile, pset=pset)
 
-TRACES=monitor.generate_all_traces("examples/simple/simple.pddl")
+# TODO Teach Nir Oren the scourge of hard coded constants
+# TRACES=monitor.generate_all_traces("examples/simple/simple.pddl")
+TRACES=monitor.sample_traces("examples/psr-small/domain01.pddl",1000)
 MODELSENSOR=Sensor(True)
 sp = Sensor_Parser()
 
