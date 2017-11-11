@@ -93,7 +93,7 @@ if __name__ == '__main__':
     domain_template = 'examples/psr-small/domain{0}.pddl'
     problem_template = 'examples/psr-small/task{0}.pddl'
     experiments = 10
-    samples = 500
+    samples = 200
     popSize = 100
     nGens = 100
     import numpy as np
@@ -116,14 +116,14 @@ if __name__ == '__main__':
 
         traces = []
         print "Sampling {0} traces for domain {1}".format(samples, domain_filename)
-        traces = monitoring.monitor.sample_traces(domain_filename, samples)
+        # traces = monitoring.monitor.sample_traces(domain_filename, samples)
         print "Generated {0} valid traces from a sample of {1}".format(len(traces), samples)
 
         simple_sensor = "({0} v {1})".format(pp.initial_state[1],pp.positive_goals[-1]).replace(",","").replace("\'","")
         print "Simple sensor: "+simple_sensor
         gp = GP(False)
         tpr, tnr, fpr, fnr = 0, 0, 0, 0
-        tpr, tnr, fpr, fnr = gp.build_sensor(pp.domain,simple_sensor,traces,popSize,nGens)
+        # tpr, tnr, fpr, fnr = gp.build_sensor(pp.domain,simple_sensor,traces,popSize,nGens)
 
         ss_stats[i-1] = [i,
                          len(pp.domain.all_facts),
@@ -147,7 +147,7 @@ if __name__ == '__main__':
         print "Complex sensor: " + complex_sensor
         gp = GP(False)
         tpr, tnr, fpr, fnr = 0, 0, 0, 0
-        tpr, tnr, fpr, fnr = gp.build_sensor(pp.domain,complex_sensor,traces,popSize,nGens)
+        # tpr, tnr, fpr, fnr = gp.build_sensor(pp.domain,complex_sensor,traces,popSize,nGens)
 
 
         cs_stats[i - 1] = [i,
