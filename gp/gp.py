@@ -9,25 +9,26 @@ import monitoring.monitor
 from monitoring.monitor import evaluate_sensor_on_traces
 
 class GP(object):
-    def __init__(self):
-        pass
+    def __init__(self,verbose=True):
+        self.verbose = verbose
+        self.state_space = []
 
-    def build_sensor_for_domain(self,pddl,modelSensor,sample_traces):
+    def build_sensor_for_domain(self, pddl, model_sensor, samples, popSize=100, nGens=100):
         parser = PDDL_Parser()
         parser.parse_domain(pddl)
         domain = parser.domain.groundify()
 
         traces = []
-        if sample_traces > 0:
-            print "Sampling {0} traces for domain {1}".format(sample_traces,pddl)
-            traces = monitoring.monitor.sample_traces(pddl, sample_traces)
-            print "Generated {0} valid traces from a sample of {1}".format(len(traces), sample_traces)
+        if samples > 0:
+            print "Sampling {0} traces for domain {1}".format(samples, pddl)
+            traces = monitoring.monitor.sample_traces(pddl, samples)
+            print "Generated {0} valid traces from a sample of {1}".format(len(traces), samples)
         else:
             print "Generating all traces for domain {0}".format(pddl)
             traces = monitoring.monitor.generate_all_traces(pddl)
             print "Generated {0} traces".format(len(traces))
 
-        return self.build_sensor(domain,modelSensor, traces)
+        return self.build_sensor(domain, model_sensor, traces, popSize, nGens)
 
     def build_sensor(self, domain, modelSensor, traces, popSize=100, nGens=100, reproducePercent=0.8,mutatePercent=0.05,crossOverPercent=0.1):
         terms = []
@@ -42,7 +43,7 @@ class GP(object):
         pop = Population(popSize, ng, reproducePercent, mutatePercent, crossOverPercent, gpo, sp.parse_sensor(modelSensor), traces)
 
         for i in range(0, nGens):
-            print "g", i
+            if self.verbose: print "g", i
             f = pop.generation()
             m = 0
             p = None
@@ -86,11 +87,47 @@ class GP(object):
         return (tpr,tnr,fpr,fnr)
 
 if __name__ == '__main__':
-    # TPR: 0.957627118644
-    # TNR: 0.0
-    # FPR: 0.0423728813559
-    # FNR: 0.0
-    gp = GP()
-    gp.build_sensor_for_domain('examples/psr-small/domain01.pddl',"((NOT-UPDATED-CB1) v (UPDATED-CB1))",1000)
+    # gp = GP()
+    # gp.build_sensor_for_domain('examples/psr-small/domain01.pddl',"((NOT-UPDATED-CB1) v (UPDATED-CB1))",1000)
+    domain_template = 'examples/psr-small/domain{0}.pddl'
+    problem_template = 'examples/psr-small/task{0}.pddl'
+    experiments = 50
+    samples = 100
+    import numpy as np
+
+    #ipreds,iactions,istate_space,traces, itpr,itnr,ifpr,ifnr = 1, 2, 3, 4, 5, 6, 7, 8
+    ss_stats = np.zeros((experiments,9)) #Stats for the simple sensor
+    cs_stats = np.zeros((experiments,9)) #Stats for the complex sensor
+
+    for i in range(1,experiments+1):
+        domain_filename = 'examples/psr-small/domain{0}.pddl'.format("%02d" % i)
+        problem_filename = 'examples/psr-small/task{0}.pddl'.format("%02d" % i)
+        pp = PDDL_Parser()
+        pp.parse_domain(domain_filename)
+        pp.parse_problem(problem_filename)
+        print "Processing ",domain_filename
+
+        traces = []
+        print "Sampling {0} traces for domain {1}".format(samples, domain_filename)
+        traces = monitoring.monitor.sample_traces(domain_filename, samples)
+        print "Generated {0} valid traces from a sample of {1}".format(len(traces), samples)
+
+        simple_sensor = "({0} v {1})".format(pp.initial_state[1],pp.positive_goals[-1])
+        print "Simple sensor: "+simple_sensor
+        gp = GP(False)
+        # tpr, tnr, fpr, fnr = gp.build_sensor(domain,simple_sensor,traces,10,10)
+        tpr, tnr, fpr, fnr = 0, 0, 0, 0
+
+        ss_stats[i-1] = [i, len(pp.domain.all_facts), len(pp.domain.actions), len(pp.domain.state_space), len(traces), tpr, tnr, fpr, fnr]
+
+        # Saving file in the middle of the loop in case of kills
+
+        print "Writing sats to psr-ss.txt"
+        np.savetxt("psr-ss.txt", ss_stats,
+                   fmt='%d $d %d %d %d %.4f %.4f %.4f %.4f', delimiter=" ", newline="\n",
+                   header="Index, #Predicates, #Actions, #States, #Traces, TPR, TNR, FPR, FNR", footer="", comments="")
+
+
+
 
 

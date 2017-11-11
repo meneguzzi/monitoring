@@ -17,6 +17,7 @@ class Problem():
 class Domain():
 
     def __init__(self,actions):
+        self.ss = None
         self.actions = {}
         for action in actions:
             self.actions[action.name] = action
@@ -25,6 +26,12 @@ class Domain():
     def all_facts(self):
         all_facts = set([fact for op in self.actions.values() for fact in op.all_facts()])
         return all_facts
+
+    @property
+    def state_space(self):
+        if self.ss is None:
+            self.ss = [s for s in self.generate_state_space()]
+        return self.ss
 
     def generate_state_space(self):
         return powerset(self.all_facts)

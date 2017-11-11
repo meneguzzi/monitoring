@@ -31,7 +31,7 @@ def sample_traces(domain_file, max_samples=100, ignore_empty = True, planner = P
     traces = []
     domain = get_domain(domain_file)
 
-    population = [(s0,sg) for s0, sg in permutations(domain.generate_state_space(), 2)]
+    population = [(s0,sg) for s0, sg in permutations(domain.state_space, 2)]
     max_samples = min(len(population),max_samples)
     population = random.sample(population, max_samples)
     return generate_traces_for_population(domain,population,ignore_empty,planner)

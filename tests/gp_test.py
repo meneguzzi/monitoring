@@ -2,6 +2,7 @@ import sys
 import unittest
 
 import monitoring.monitor
+from gp.gp import GP
 from gp.gpOps import GPOps
 from gp.nodeGenerator import NodeGenerator
 from gp.population import Population
@@ -11,7 +12,7 @@ from structures.sensor import Sensor, Sensor_Parser
 
 class GPTestCase(unittest.TestCase):
 
-    @unittest.skip#Unless(sys.platform.startswith("linux"), "Only test in Travis")
+    @unittest.skipUnless(sys.platform.startswith("linux"), "Only test in Travis")
     def test_randomsensor(self):
         parser = PDDL_Parser()
         simplePDDL = 'examples/simple/simple.pddl'
@@ -30,7 +31,7 @@ class GPTestCase(unittest.TestCase):
         #         pop.generation()
         # print pop.generation()
 
-    @unittest.skip#Unless(sys.platform.startswith("linux"), "Only test in Travis")
+    @unittest.skipUnless(sys.platform.startswith("linux"), "Only test in Travis")
     def test_randomsensor_large(self):
         parser = PDDL_Parser()
         pddl = 'examples/psr-small/domain01.pddl'
@@ -48,6 +49,18 @@ class GPTestCase(unittest.TestCase):
         sp = Sensor_Parser()
         gpo = GPOps(terms, 1, 5, 1, 4)
         pop = Population(100, ng, 0.8, 0.05, 0.1, gpo, sp.parse_sensor("((NOT-UPDATED-CB1) v (UPDATED-CB1))"), traces)
+
+    def test_new_gp_small(self):
+        gp = GP(False)
+        (tpr, tnr, fpr, fnr) = gp.build_sensor_for_domain('examples/simple/simple.pddl',
+                                                          "((p) v (q))", 1000)
+        self.assertGreater(tpr, 0.8)
+
+    @unittest.skipUnless(sys.platform.startswith("linux"), "Only test in Travis")
+    def test_new_gp_large(self):
+        gp = GP(False)
+        (tpr,tnr,fpr,fnr) = gp.build_sensor_for_domain('examples/psr-small/domain01.pddl', "((NOT-UPDATED-CB1) v (UPDATED-CB1))", 1000)
+        self.assertGreater(tpr,0.9)
 
 
 if __name__ == '__main__':

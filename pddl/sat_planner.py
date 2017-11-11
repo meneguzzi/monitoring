@@ -6,7 +6,7 @@ from structures.domain import Domain
 
 from itertools import combinations
 
-from z3 import Solver, And, Or, Implies, Not, Bool, sat
+from z3 import *
 
 class SAT_Planner(PDDL_Planner):
 
