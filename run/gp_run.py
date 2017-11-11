@@ -158,6 +158,4 @@ if __name__ == '__main__':
     # test_randomsensor()
     #test_randomsensor_psr()
     import subprocess
-    subprocess.call(["~/slackMessage.sh", "-m",
-                     "\"Monitor experiment complete at `hostname`\"".format()])
-    # subprocess.call("~/slackMessage.sh -m \"Monitor experiment complete at `hostname`\"".format())
+    subprocess.call("~/slackMessage.sh -m \"Monitor experiment complete at `hostname`\"".format(), shell=True)

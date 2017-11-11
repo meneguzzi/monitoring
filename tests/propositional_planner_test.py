@@ -5,6 +5,7 @@ import unittest
 from structures.domain import Action
 from pddl.propositional_planner import Propositional_Planner
 from pddl.sat_planner import SAT_Planner
+import sys
 
 # ==========================================
 # Test Propositional_Planner
@@ -26,7 +27,7 @@ class Propositional_Planner_Test(unittest.TestCase):
             ]
                          )
 
-
+    @unittest.skipUnless(sys.platform.startswith("osx"), "Skip, since travis does not like z3")
     def test_solve_sat(self):
         planner = SAT_Planner()
         plan = planner.solve_file('examples/dinner/dinner.pddl', 'examples/dinner/pb1.pddl')
