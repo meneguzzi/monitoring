@@ -1,14 +1,12 @@
+import sys
 import unittest
 
 import monitoring.monitor
 from gp.gpOps import GPOps
 from gp.nodeGenerator import NodeGenerator
 from gp.population import Population
-from monitoring.monitor import evaluate_sensor_on_traces
 from pddl.PDDL import PDDL_Parser
 from structures.sensor import Sensor, Sensor_Parser
-from graph import domain2dot
-import sys
 
 
 class GPTestCase(unittest.TestCase):
@@ -32,7 +30,7 @@ class GPTestCase(unittest.TestCase):
         #         pop.generation()
         # print pop.generation()
 
-
+    @unittest.skipUnless(sys.platform.startswith("linux"), "Only test in Travis")
     def test_randomsensor_large(self):
         parser = PDDL_Parser()
         pddl = 'examples/psr-small/domain01.pddl'

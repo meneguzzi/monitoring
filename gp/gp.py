@@ -1,97 +1,96 @@
 from structures.domain import Domain, Action, State, Trace
 from structures.sensor import Sensor, Sensor_Parser
-from structures import sensor
-from deap import gp,creator,base,tools,algorithms
-from monitoring import monitor
-from monitoring.monitor import evaluate_sensor_on_traces
-import random,numpy
-from structures.sensor import snot,sor,sand,spath
-
+import structures.sensor
 from pddl.PDDL import PDDL_Parser
+from nodeGenerator import NodeGenerator
+from population import Population
+from gpOps import GPOps
+import monitoring.monitor
+from monitoring.monitor import evaluate_sensor_on_traces
 
-def getTerminalSensors(domain,num):
-    return Sensor.generate_sensor(domain, num)
+class GP(object):
+    def __init__(self):
+        pass
 
-# TODO Teach Nir Oren the value of writing generic code
-# TODO Teach Nir Oren the scourge of hard coded constants
-parser = PDDL_Parser()
-# parser.parse_domain('examples/simple/simple.pddl')
-# parser.parse_problem('examples/simple/pb1.pddl')
-parser.parse_domain('examples/psr-small/domain01.pddl')
-parser.parse_problem('examples/psr-small/task01.pddl')
-domain = parser.domain.groundify()
+    def build_sensor_for_domain(self,pddl,modelSensor,sample_traces):
+        parser = PDDL_Parser()
+        parser.parse_domain(pddl)
+        domain = parser.domain.groundify()
 
-"""create the pset"""
-pset=gp.PrimitiveSetTyped("Main",[],Sensor)
-pset.addPrimitive(sensor.sand,[Sensor,Sensor],Sensor)
-pset.addPrimitive(sensor.sor,[Sensor,Sensor],Sensor)
-pset.addPrimitive(sensor.snot,[Sensor],Sensor)
-pset.addPrimitive(sensor.spath,[int,Sensor,Sensor],Sensor)
+        traces = []
+        if sample_traces > 0:
+            print "Sampling {0} traces for domain {1}".format(sample_traces,pddl)
+            traces = monitoring.monitor.sample_traces(pddl, sample_traces)
+            print "Generated {0} valid traces from a sample of {1}".format(len(traces), sample_traces)
+        else:
+            print "Generating all traces for domain {0}".format(pddl)
+            traces = monitoring.monitor.generate_all_traces(pddl)
+            print "Generated {0} traces".format(len(traces))
 
-NUMTERMINALS=20
-NUMSTEPS=5
+        return self.build_sensor(domain,modelSensor, traces)
 
-for ts in getTerminalSensors(domain,NUMTERMINALS):
-    pset.addTerminal(ts,Sensor)
+    def build_sensor(self, domain, modelSensor, traces, popSize=100, nGens=100, reproducePercent=0.8,mutatePercent=0.05,crossOverPercent=0.1):
+        terms = []
+        for i in range(0, 15):
+            terms.append(Sensor.generate_sensor(domain, 1))
+        print terms
+        ng = NodeGenerator(terms, 1, 5, 2, 5)
 
-for i in range(1,NUMSTEPS+1):
-    pset.addPrimitive(int,[int],int)
-    pset.addTerminal(i,int)
+        sp = Sensor_Parser()
+        gpo = GPOps(terms, 1, 5, 1, 4)
 
-creator.create("FitnessMax",base.Fitness,weights=(1.0,))
-creator.create("Individual",gp.PrimitiveTree,fitness=creator.FitnessMax)
+        pop = Population(popSize, ng, reproducePercent, mutatePercent, crossOverPercent, gpo, sp.parse_sensor(modelSensor), traces)
 
-toolbox = base.Toolbox()
-toolbox.register("expr", gp.genHalfAndHalf, pset=pset, min_=0, max_=2)
-toolbox.register("individual", tools.initIterate, creator.Individual, toolbox.expr)
-toolbox.register("population", tools.initRepeat, list, toolbox.individual)
-toolbox.register("compile", gp.compile, pset=pset)
+        for i in range(0, nGens):
+            print "g", i
+            f = pop.generation()
+            m = 0
+            p = None
+            for k, v in f.iteritems():
+                if v > m:
+                    m = v
+                    p = k
+                    #                       print p.compile()
+            if m > 0:
+                print m, p.compile()
+            pop.updateGen(f)
 
-# TODO Teach Nir Oren the scourge of hard coded constants
-# TRACES=monitor.generate_all_traces("examples/simple/simple.pddl")
-TRACES=monitor.sample_traces("examples/psr-small/domain01.pddl",1000)
-MODELSENSOR=Sensor(True)
-sp = Sensor_Parser()
+        m = 0
+        p = None
+        for k, v in pop.generation().iteritems():
+            if v > m:
+                m = v
+                p = k
+        d = evaluate_sensor_on_traces(traces, sp.parse_sensor(modelSensor))
+        a = evaluate_sensor_on_traces(traces, p.compile())
 
-def evalSensor(s):
-    print("s:",str(s))
-    # print("e:",eval(str(s)))
-    # sensor=eval(str(s))#toolbox.compile(expr=str(s))
-    sensor = sp.parse_sensor("("+str(s).replace("snot","-")+")")
-    desired=evaluate_sensor_on_traces(TRACES,MODELSENSOR)
-    print "Evaluating sensor "+str(sensor)
-    actual=evaluate_sensor_on_traces(TRACES,sensor)
+        total = len(traces)
+        tp = set(d[0]) & set(a[0])
+        tn = set(d[1]) & set(a[1])
+        fp = set(a[0]) & set(d[1])
+        fn = set(a[1]) & set(d[0])
+        # print len(tp)
+        # print len(fp)
+        # print len(tn)
+        # print len(fn)
+        # print len(tp) + len(tn) - len(fp) - len(fn)
+        tpr = len(tp) / float(total)
+        tnr = len(tn) / float(total)
+        fpr = len(fp) / float(total)
+        fnr = len(fn) / float(total)
+        print "TPR: {0}".format(tpr)
+        print "TNR: {0}".format(tnr)
+        print "FPR: {0}".format(fpr)
+        print "FNR: {0}".format(fnr)
 
-    tp=set(desired[0]) & set(actual[0])
-    tn=set(desired[1]) & set(actual[1])
+        return (tpr,tnr,fpr,fnr)
 
-    fp=set(actual[0]) - set(desired[1])
-    fn=set(actual[1]) - set(desired[0])
+if __name__ == '__main__':
+    # TPR: 0.957627118644
+    # TNR: 0.0
+    # FPR: 0.0423728813559
+    # FNR: 0.0
+    gp = GP()
+    gp.build_sensor_for_domain('examples/psr-small/domain01.pddl',"((NOT-UPDATED-CB1) v (UPDATED-CB1))",1000)
 
-    return (len(tp)+len(tn)-len(fp)-len(fn)),
-
-toolbox.register("evaluate",evalSensor)
-
-toolbox.register("select", tools.selTournament, tournsize=3)
-toolbox.register("mate", gp.cxOnePoint)
-toolbox.register("expr_mut", gp.genFull, min_=0, max_=2)
-toolbox.register("mutate", gp.mutUniform, expr=toolbox.expr_mut, pset=pset)
-
-def main():
-    random.seed(10)
-    pop=toolbox.population(n=100)
-    hof=tools.HallOfFame(1)
-
-    stats=tools.Statistics(lambda ind: ind.fitness.values)
-
-    stats.register("avg", numpy.mean)
-    stats.register("std", numpy.std)
-    stats.register("min", numpy.min)
-    stats.register("max", numpy.max)
-
-    algorithms.eaSimple(pop, toolbox, 0.5, 0.2, 40, stats, halloffame=hof)
-    return pop, stats, hof
-
-if __name__ == "__main__":
-        main()
 

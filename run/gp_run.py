@@ -1,14 +1,10 @@
-from structures.domain import Domain, Action, State, Trace
-from structures.sensor import Sensor, Sensor_Parser
-import structures.sensor
-from pddl.PDDL import PDDL_Parser
+import monitoring.monitor
+from gp.gpOps import GPOps
 from gp.nodeGenerator import NodeGenerator
 from gp.population import Population
-from gp.gpOps import GPOps
-from gp.node import Node
-import monitoring.monitor
 from monitoring.monitor import evaluate_sensor_on_traces
-import random
+from pddl.PDDL import PDDL_Parser
+from structures.sensor import Sensor, Sensor_Parser
 
 
 def test_randomsensor():
@@ -152,12 +148,16 @@ def test_randomsensor_psr():
     # print len(tn)
     # print len(fn)
     # print len(tp) + len(tn) - len(fp) - len(fn)
-    print "TPR: {0}".format(tp/total)
-    print "TNR: {0}".format(tn / total)
-    print "FPR: {0}".format(fp / total)
-    print "FNR: {0}".format(fn / total)
+    print "TPR: {0}".format(len(tp) / float(total))
+    print "TNR: {0}".format(len(tn) / float(total))
+    print "FPR: {0}".format(len(fp) / float(total))
+    print "FNR: {0}".format(len(fn) / float(total))
 
 
 if __name__ == '__main__':
     # test_randomsensor()
-    test_randomsensor_psr()
+    #test_randomsensor_psr()
+    import subprocess
+    subprocess.call(["~/slackMessage.sh", "-m",
+                     "\"Monitor experiment complete at `hostname`\"".format()])
+    # subprocess.call("~/slackMessage.sh -m \"Monitor experiment complete at `hostname`\"".format())
