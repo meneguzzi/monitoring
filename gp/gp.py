@@ -114,7 +114,8 @@ if __name__ == '__main__':
         pp.parse_problem(problem_filename)
         print "Processing ",domain_filename
 
-        if len(pp.domain.actions) > 20 : print "Skipping overlong domain"; continue
+        # if len(pp.domain.actions) > 20 : print "Skipping overlong domain"; continue
+        if len(pp.domain.all_facts) > 20: print "Skipping overlong domain"; continue
 
         traces = []
         print "Sampling {0} traces for domain {1}".format(samples, domain_filename)
