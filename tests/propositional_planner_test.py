@@ -27,6 +27,18 @@ class Propositional_Planner_Test(unittest.TestCase):
             ]
                          )
 
+    def test_solve_psr(self):
+        domain_template = 'examples/psr-small/domain{0}.pddl'
+        problem_template = 'examples/psr-small/task{0}.pddl'
+        planner = Propositional_Planner()
+        for i in range(1, 51):
+            domain_filename = 'examples/psr-small/domain{0}.pddl'.format("%02d" % i)
+            problem_filename = 'examples/psr-small/task{0}.pddl'.format("%02d" % i)
+            print "Processing ", domain_filename, " and ", problem_filename
+            plan = planner.solve_file(domain_filename,problem_filename)
+            print "Plan length ",len(plan)
+
+
     @unittest.skipUnless(sys.platform.startswith("osx"), "Skip, since travis does not like z3")
     def test_solve_sat(self):
         planner = SAT_Planner()

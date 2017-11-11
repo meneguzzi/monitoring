@@ -92,8 +92,8 @@ if __name__ == '__main__':
     # gp.build_sensor_for_domain('examples/psr-small/domain01.pddl',"((NOT-UPDATED-CB1) v (UPDATED-CB1))",1000)
     domain_template = 'examples/psr-small/domain{0}.pddl'
     problem_template = 'examples/psr-small/task{0}.pddl'
-    experiments = 2
-    samples = 100
+    experiments = 50
+    samples = 500
     popSize = 100
     nGens = 100
     import numpy as np
@@ -102,7 +102,11 @@ if __name__ == '__main__':
     ss_stats = np.zeros((experiments,9)) #Stats for the simple sensor
     cs_stats = np.zeros((experiments,9)) #Stats for the complex sensor
 
+    skip = []
+    skip = [2]
+
     for i in range(1,experiments+1):
+        if i in skip: continue # Skipping overlong domains
         domain_filename = 'examples/psr-small/domain{0}.pddl'.format("%02d" % i)
         problem_filename = 'examples/psr-small/task{0}.pddl'.format("%02d" % i)
         pp = PDDL_Parser()
@@ -118,8 +122,8 @@ if __name__ == '__main__':
         simple_sensor = "({0} v {1})".format(pp.initial_state[1],pp.positive_goals[-1]).replace(",","").replace("\'","")
         print "Simple sensor: "+simple_sensor
         gp = GP(False)
-        tpr, tnr, fpr, fnr = gp.build_sensor(pp.domain,simple_sensor,traces,popSize,nGens)
         tpr, tnr, fpr, fnr = 0, 0, 0, 0
+        tpr, tnr, fpr, fnr = gp.build_sensor(pp.domain,simple_sensor,traces,popSize,nGens)
 
         ss_stats[i-1] = [i,
                          len(pp.domain.all_facts),
@@ -142,8 +146,9 @@ if __name__ == '__main__':
         complex_sensor = "({0} [{2}] {1})".format(pp.initial_state[1], pp.positive_goals[-1],len(plan)+1).replace(",","").replace("\'","")
         print "Complex sensor: " + complex_sensor
         gp = GP(False)
-        tpr, tnr, fpr, fnr = gp.build_sensor(pp.domain,complex_sensor,traces,popSize,nGens)
         tpr, tnr, fpr, fnr = 0, 0, 0, 0
+        tpr, tnr, fpr, fnr = gp.build_sensor(pp.domain,complex_sensor,traces,popSize,nGens)
+
 
         cs_stats[i - 1] = [i,
                            len(pp.domain.all_facts),
