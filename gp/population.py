@@ -3,6 +3,7 @@ from nodeGenerator import NodeGenerator
 import gpOps
 import functools
 from monitoring.monitor import evaluate_sensor_on_traces
+from multithreading import Process
 
 
 class Population:
@@ -24,8 +25,8 @@ class Population:
      
   def iterate(self):
     fitness={}
+    desired=evaluate_sensor_on_traces(self.traces,self.modelSensor)
     for p in self.pop:
-        desired=evaluate_sensor_on_traces(self.traces,self.modelSensor)
         actual=evaluate_sensor_on_traces(self.traces,p.compile())
 
 
