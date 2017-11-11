@@ -3,7 +3,6 @@ from nodeGenerator import NodeGenerator
 import gpOps
 import functools
 from monitoring.monitor import evaluate_sensor_on_traces
-from multithreading import Process
 
 
 class Population:
