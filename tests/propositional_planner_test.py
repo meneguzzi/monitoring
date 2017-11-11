@@ -35,7 +35,7 @@ class Propositional_Planner_Test(unittest.TestCase):
         problem_template = 'examples/psr-small/task{0}.pddl'
         planner = Heuristic_Planner()
         # last_domain = 50
-        last_domain = 15
+        last_domain = 14
         for i in range(1, last_domain+1):
             domain_filename = 'examples/psr-small/domain{0}.pddl'.format("%02d" % i)
             problem_filename = 'examples/psr-small/task{0}.pddl'.format("%02d" % i)

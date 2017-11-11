@@ -92,7 +92,7 @@ if __name__ == '__main__':
     # gp.build_sensor_for_domain('examples/psr-small/domain01.pddl',"((NOT-UPDATED-CB1) v (UPDATED-CB1))",1000)
     domain_template = 'examples/psr-small/domain{0}.pddl'
     problem_template = 'examples/psr-small/task{0}.pddl'
-    experiments = 50
+    experiments = 10
     samples = 500
     popSize = 100
     nGens = 100
@@ -103,7 +103,7 @@ if __name__ == '__main__':
     cs_stats = np.zeros((experiments,9)) #Stats for the complex sensor
 
     skip = []
-    skip = [2,20]
+    # skip = [2,20]
 
     for i in range(1,experiments+1):
         if i in skip: print "Skipping {0}".format(i); continue # Skipping overlong domains

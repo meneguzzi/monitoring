@@ -5,6 +5,8 @@ from structures.domain import State,Trace, Domain
 from structures.sensor import Sensor, Sensor_Parser
 from itertools import product, permutations
 
+import sys
+
 import random
 
 class MonitorSynthesizer():
@@ -12,15 +14,22 @@ class MonitorSynthesizer():
     def __init__(self):
         pass
 
+
 def get_domain(domain_file):
     pddlparser = PDDL_Parser()
     pddlparser.parse_domain(domain_file)
     pdomain = pddlparser.domain.groundify()
     return pdomain
 
+
 def generate_traces_for_population(domain,population,ignore_empty,planner):
     traces = []
+    one_percent = max(len(population)/100,1)
+    current = 0
     for s0, sg in population:
+        current +=1
+        if (current % one_percent) == 0 : print '{}%'.format(current/one_percent),
+        # if (current % one_percent) == 0: sys.stdout.write('{}%'.format(current / one_percent)), sys.stdout.flush()
         if planner.solvable(domain, s0, (sg, [])):
             plan = planner.solve(domain, s0, (sg, []))
             if plan is not None:
@@ -28,7 +37,7 @@ def generate_traces_for_population(domain,population,ignore_empty,planner):
     return traces
 
 
-def sample_traces(domain_file, max_samples=100, ignore_empty = True, planner = Heuristic_Planner()):
+def sample_traces(domain_file, max_samples=100, ignore_empty = True, planner = Propositional_Planner()):
     traces = []
     domain = get_domain(domain_file)
 
@@ -45,7 +54,7 @@ def sample_traces(domain_file, max_samples=100, ignore_empty = True, planner = H
     # return traces
 
 
-def generate_all_traces(domain_file, planner = Heuristic_Planner()):
+def generate_all_traces(domain_file, planner = Propositional_Planner()):
     traces = []
     domain = get_domain(domain_file)
     for s0, sg in product(domain.generate_state_space(), repeat=2):
