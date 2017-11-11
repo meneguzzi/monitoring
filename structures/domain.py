@@ -171,7 +171,7 @@ class State():
 
     def __init__(self,facts=None):
         ## A state has a dictionary of facts
-        self.facts = set([])
+        self.facts = frozenset([])
         if facts is not None:
             self.facts |= set(facts)
 
@@ -225,6 +225,9 @@ class State():
 
     def __repr__(self):
         return str(list(self.facts))
+
+    def __contains__(self, item):
+        return item in self.facts
 
     def to_PDDL(self):
         str = "(and "

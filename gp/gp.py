@@ -103,10 +103,10 @@ if __name__ == '__main__':
     cs_stats = np.zeros((experiments,9)) #Stats for the complex sensor
 
     skip = []
-    skip = [2]
+    skip = [2,20]
 
     for i in range(1,experiments+1):
-        if i in skip: continue # Skipping overlong domains
+        if i in skip: print "Skipping {0}".format(i); continue # Skipping overlong domains
         domain_filename = 'examples/psr-small/domain{0}.pddl'.format("%02d" % i)
         problem_filename = 'examples/psr-small/task{0}.pddl'.format("%02d" % i)
         pp = PDDL_Parser()

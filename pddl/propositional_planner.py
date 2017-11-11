@@ -3,7 +3,7 @@
 
 from pddl.PDDL import PDDL_Parser
 from pddl.PDDL import PDDL_Planner
-
+from structures.domain import State
 
 class Propositional_Planner(PDDL_Planner):
 
@@ -15,16 +15,18 @@ class Propositional_Planner(PDDL_Planner):
 
         # Parsed data
         actions = domain
-        state = initial_state
-        goal_pos = goal_state[0]
-        goal_not = goal_state[1]
+        state = frozenset(initial_state)
+        goal_pos = frozenset(goal_state[0])
+        goal_not = frozenset(goal_state[1])
         # Do nothing
         if self.applicable(state, goal_pos, goal_not):
             return []
         # Search
-        visited = [state]
+        visited = set([state])
         fringe = [state, None]
         while fringe:
+            # state = fringe.pop(0)
+            # plan = fringe.pop(0)
             state = fringe.pop(0)
             plan = fringe.pop(0)
             for act in actions:
@@ -37,7 +39,8 @@ class Propositional_Planner(PDDL_Planner):
                                 act, plan = plan
                                 full_plan.insert(0, act)
                             return full_plan
-                        visited.append(new_state)
+                        # visited.append(new_state)
+                        visited.add(new_state)
                         fringe.append(new_state)
                         fringe.append((act, plan))
         return None

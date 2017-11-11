@@ -4,6 +4,7 @@ from structures.domain import Domain, Action, State, Trace
 from structures.sensor import Sensor, Sensor_Parser
 from pddl.PDDL import PDDL_Parser
 from pddl.propositional_planner import Propositional_Planner
+from pddl.heuristic_planner import Heuristic_Planner
 from pddl.sat_planner import SAT_Planner
 import monitoring.monitor
 from monitoring.monitor import evaluate_sensor_on_traces, generate_all_traces, sample_traces
@@ -170,20 +171,22 @@ class MonitoringTestCase(unittest.TestCase):
         # end = time.time()
         # print "SAT planner took {0}s to generate traces".format(end - start)
 
-    @unittest.skipUnless(sys.platform.startswith("linux"), "Only test in Travis")
+    # @unittest.skipUnless(sys.platform.startswith("linux"), "Only test in Travis")
     def test_sample_traces(self):
-        pddl_file = 'examples/simple/simple.pddl'
 
-        start = time.time()
-        sample_traces(pddl_file,100)
-        end = time.time()
-        print "Trace sample took {0}s for {1}".format(end - start, pddl_file)
+        for planner in [#SAT_Planner(),
+                        Propositional_Planner(), Heuristic_Planner()]:
+            pddl_file = 'examples/simple/simple.pddl'
+            start = time.time()
+            sample_traces(pddl_file, 100)
+            end = time.time()
+            print "Trace sample took {0}s for {1} using {2}".format(end - start, pddl_file, planner.__class__.__name__)
 
-        pddl_file = 'examples/psr-small/domain01.pddl'
-        start = time.time()
-        sample_traces(pddl_file,100)
-        end = time.time()
-        print "Trace sample took {0}s for {1}".format(end - start, pddl_file)
+            pddl_file = 'examples/psr-small/domain01.pddl'
+            start = time.time()
+            sample_traces(pddl_file, 50)
+            end = time.time()
+            print "Trace sample took {0}s for {1} using {2}".format(end - start, pddl_file, planner.__class__.__name__)
 
 
 if __name__ == '__main__':

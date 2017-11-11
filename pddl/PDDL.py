@@ -236,7 +236,7 @@ class PDDL_Planner(object):
         for i in positive:
             if i not in new_state:
                 new_state.append(i)
-        return new_state
+        return frozenset(new_state)
 
 # ==========================================
 # Main

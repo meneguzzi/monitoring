@@ -1,5 +1,6 @@
 from pddl.PDDL import PDDL_Parser, PDDL_Planner
 from pddl.propositional_planner import Propositional_Planner
+from pddl.heuristic_planner import Heuristic_Planner
 from structures.domain import State,Trace, Domain
 from structures.sensor import Sensor, Sensor_Parser
 from itertools import product, permutations
@@ -27,7 +28,7 @@ def generate_traces_for_population(domain,population,ignore_empty,planner):
     return traces
 
 
-def sample_traces(domain_file, max_samples=100, ignore_empty = True, planner = Propositional_Planner()):
+def sample_traces(domain_file, max_samples=100, ignore_empty = True, planner = Heuristic_Planner()):
     traces = []
     domain = get_domain(domain_file)
 
@@ -44,7 +45,7 @@ def sample_traces(domain_file, max_samples=100, ignore_empty = True, planner = P
     # return traces
 
 
-def generate_all_traces(domain_file, planner = Propositional_Planner()):
+def generate_all_traces(domain_file, planner = Heuristic_Planner()):
     traces = []
     domain = get_domain(domain_file)
     for s0, sg in product(domain.generate_state_space(), repeat=2):
