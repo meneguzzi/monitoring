@@ -38,6 +38,19 @@ def generate_traces_for_population(domain,population,ignore_empty,planner):
     return traces
 
 
+def sample_trace_from_file(domain_file, ignore_empty = True, planner=Propositional_Planner()):
+    domain = get_domain(domain_file)
+    trace = None
+    while trace is None:
+        s0, sg = random.sample(domain.state_space,2)
+        if planner.solvable(domain, s0, (sg, [])):
+            plan = planner.solve(domain, s0, (sg, []))
+            if plan is not None:
+                if plan == [] and ignore_empty: continue
+                trace = (s0, tuple(plan), sg)
+    return trace
+
+
 def sample_trace(domain, ignore_empty = True, planner=Propositional_Planner()):
     trace = None
     while trace is None:

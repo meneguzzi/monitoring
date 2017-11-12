@@ -100,9 +100,12 @@ def gp_generate(domain_filename,i,problem_filename,samples,popSize,nGens, planne
 
     traces = []
     print "Sampling {0} traces for domain {1}".format(samples, domain_filename)
-    traces = monitoring.monitor.sample_traces(domain_filename, samples, planner=Propositional_Planner(time_limit=planner_time_limit, max_length=max_length))
-    # for i in range(0,samples):
-    #     traces.append(monitoring.monitor.sample_trace(pp.domain))
+    # traces = monitoring.monitor.sample_traces(domain_filename, samples, planner=Propositional_Planner(time_limit=planner_time_limit, max_length=max_length))
+    for i in range(0,samples):
+        # traces.append(monitoring.monitor.sample_trace(pp.domain, planner=Propositional_Planner(time_limit=planner_time_limit, max_length=max_length)))
+        traces.append(monitoring.monitor.sample_trace_from_file(domain_filename,
+                                                      planner=Propositional_Planner(time_limit=planner_time_limit,
+                                                                                    max_length=max_length)))
     print "Generated {0} valid traces from a sample of {1}".format(len(traces), samples)
 
     simple_sensor = "({0} v {1})".format(pp.initial_state[1], pp.positive_goals[-1]).replace(",", "").replace("\'", "")
@@ -120,7 +123,7 @@ def gp_generate(domain_filename,i,problem_filename,samples,popSize,nGens, planne
 
     # Saving files in the middle of the loop in case of process kills
     print "Writing sats to psr-ss.txt"
-    np.savetxt("psr-ss{0}.txt".format(domain_filename), ss_stats,
+    np.savetxt("psr-ss{0}.txt".format("%02d" % i), ss_stats,
                fmt='%d %d %d %d %d %.4f %.4f %.4f %.4f', delimiter=" ", newline="\n",
                header="Index, #Predicates, #Actions, #States, #Traces, TPR, TNR, FPR, FNR", footer="", comments="")
 
@@ -146,7 +149,7 @@ def gp_generate(domain_filename,i,problem_filename,samples,popSize,nGens, planne
 
     # Saving files in the middle of the loop in case of process kills
     print "Writing sats to psr-cs.txt"
-    np.savetxt("psr-cs.txt{0}".format(domain_filename), cs_stats,
+    np.savetxt("psr-cs{0}.txt".format("%02d" % i), cs_stats,
                fmt='%d %d %d %d %d %.4f %.4f %.4f %.4f', delimiter=" ", newline="\n",
                header="Index, #Predicates, #Actions, #States, #Traces, TPR, TNR, FPR, FNR", footer="", comments="")
 
@@ -161,7 +164,7 @@ def main(argv):
     popSize = 100
     nGens = 100
     planner_time_limit = 0.02
-    max_length = 15
+    max_length = 10
 
     if len(argv) > 1:
         i = int(argv[1])
