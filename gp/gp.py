@@ -101,7 +101,7 @@ def gp_generate(domain_filename,i,problem_filename,samples,popSize,nGens, planne
     traces = []
     print "Sampling {0} traces for domain {1}".format(samples, domain_filename)
     # traces = monitoring.monitor.sample_traces(domain_filename, samples, planner=Propositional_Planner(time_limit=planner_time_limit, max_length=max_length))
-    for i in range(0,samples):
+    for s in range(0,samples):
         # traces.append(monitoring.monitor.sample_trace(pp.domain, planner=Propositional_Planner(time_limit=planner_time_limit, max_length=max_length)))
         traces.append(monitoring.monitor.sample_trace_from_file(domain_filename,
                                                       planner=Propositional_Planner(time_limit=planner_time_limit,
@@ -111,7 +111,7 @@ def gp_generate(domain_filename,i,problem_filename,samples,popSize,nGens, planne
     simple_sensor = "({0} v {1})".format(pp.initial_state[1], pp.positive_goals[-1]).replace(",", "").replace("\'", "")
     print "Simple sensor: " + simple_sensor
     gp = GP(False)
-    tpr, tnr, fpr, fnr = 0, 0, 0, 0
+    # tpr, tnr, fpr, fnr = 0, 0, 0, 0
     tpr, tnr, fpr, fnr = gp.build_sensor(pp.domain, simple_sensor, traces, popSize, nGens)
 
     ss_stats[0] = [i,
@@ -122,7 +122,7 @@ def gp_generate(domain_filename,i,problem_filename,samples,popSize,nGens, planne
                        tpr, tnr, fpr, fnr]
 
     # Saving files in the middle of the loop in case of process kills
-    print "Writing sats to psr-ss.txt"
+    print "Writing sats to ","psr-ss{0}.txt".format("%02d" % i)
     np.savetxt("psr-ss{0}.txt".format("%02d" % i), ss_stats,
                fmt='%d %d %d %d %d %.4f %.4f %.4f %.4f', delimiter=" ", newline="\n",
                header="Index, #Predicates, #Actions, #States, #Traces, TPR, TNR, FPR, FNR", footer="", comments="")
@@ -130,6 +130,7 @@ def gp_generate(domain_filename,i,problem_filename,samples,popSize,nGens, planne
     planner = Propositional_Planner(time_limit=0.3)
     print "Solving sample problem for " + problem_filename
     plan = planner.solve(pp.domain, pp.initial_state, pp.goal)
+    traces.append((tuple(pp.initial_state),tuple(plan) ,(tuple(pp.goal[0]), tuple(pp.goal[1]))))
     print "Plan length: ", len(plan)
 
     complex_sensor = "({0} [{2}] {1})".format(pp.initial_state[1], pp.positive_goals[-1], len(plan) + 1).replace(",",
@@ -138,7 +139,7 @@ def gp_generate(domain_filename,i,problem_filename,samples,popSize,nGens, planne
     print "Complex sensor: " + complex_sensor
     gp = GP(False)
     tpr, tnr, fpr, fnr = 0, 0, 0, 0
-    tpr, tnr, fpr, fnr = gp.build_sensor(pp.domain, complex_sensor, traces, popSize, nGens)
+    # tpr, tnr, fpr, fnr = gp.build_sensor(pp.domain, complex_sensor, traces, popSize, nGens)
 
     cs_stats[0] = [i,
                        len(pp.domain.all_facts),
@@ -148,7 +149,7 @@ def gp_generate(domain_filename,i,problem_filename,samples,popSize,nGens, planne
                        tpr, tnr, fpr, fnr]
 
     # Saving files in the middle of the loop in case of process kills
-    print "Writing sats to psr-cs.txt"
+    print "Writing sats to ","psr-cs{0}.txt".format("%02d" % i)
     np.savetxt("psr-cs{0}.txt".format("%02d" % i), cs_stats,
                fmt='%d %d %d %d %d %.4f %.4f %.4f %.4f', delimiter=" ", newline="\n",
                header="Index, #Predicates, #Actions, #States, #Traces, TPR, TNR, FPR, FNR", footer="", comments="")
@@ -171,6 +172,7 @@ def main(argv):
         domain_filename = 'examples/psr-small/domain{0}.pddl'.format("%02d" % i)
         problem_filename = 'examples/psr-small/task{0}.pddl'.format("%02d" % i)
         gp_generate(domain_filename, i, problem_filename, samples, popSize, nGens, planner_time_limit, max_length)
+        exit(0)
 
     # ipreds,iactions,istate_space,traces, itpr,itnr,ifpr,ifnr = 1, 2, 3, 4, 5, 6, 7, 8
     ss_stats = np.zeros((experiments, 9))  # Stats for the simple sensor
