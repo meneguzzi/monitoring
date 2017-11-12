@@ -54,7 +54,7 @@ class Action:
 
     def __init__(self, name, parameters, positive_preconditions, negative_preconditions, add_effects, del_effects=[], cost = 0):
         self.name = name
-        self.parameters = parameters
+        self.parameters = tuple(parameters)
         self.positive_preconditions = positive_preconditions
         self.negative_preconditions = negative_preconditions
         self.add_effects = add_effects

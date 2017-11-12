@@ -56,7 +56,8 @@ class GPTestCase(unittest.TestCase):
                                                           "((p) v (q))", 1000)
         self.assertGreater(tpr, 0.8)
 
-    @unittest.skipUnless(sys.platform.startswith("linux"), "Only test in Travis")
+    # @unittest.skipUnless(sys.platform.startswith("linux"), "Only test in Travis")
+    @unittest.skip("Overlong test")
     def test_new_gp_large(self):
         gp = GP(False)
         (tpr,tnr,fpr,fnr) = gp.build_sensor_for_domain('examples/psr-small/domain01.pddl', "((NOT-UPDATED-CB1) v (UPDATED-CB1))", 1000)

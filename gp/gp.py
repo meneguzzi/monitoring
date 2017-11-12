@@ -102,16 +102,16 @@ def gp_generate(domain_filename,i,problem_filename,samples,popSize,nGens, planne
     print "Sampling {0} traces for domain {1}".format(samples, domain_filename)
     # traces = monitoring.monitor.sample_traces(domain_filename, samples, planner=Propositional_Planner(time_limit=planner_time_limit, max_length=max_length))
     for s in range(0,samples):
-        # traces.append(monitoring.monitor.sample_trace(pp.domain, planner=Propositional_Planner(time_limit=planner_time_limit, max_length=max_length)))
-        traces.append(monitoring.monitor.sample_trace_from_file(domain_filename,
-                                                      planner=Propositional_Planner(time_limit=planner_time_limit,
-                                                                                    max_length=max_length)))
+        traces.append(monitoring.monitor.sample_trace(pp.domain, planner=Propositional_Planner(time_limit=planner_time_limit, max_length=max_length)))
+        # traces.append(monitoring.monitor.sample_trace_from_file(domain_filename,
+        #                                               planner=Propositional_Planner(time_limit=planner_time_limit,
+        #                                                                             max_length=max_length)))
     print "Generated {0} valid traces from a sample of {1}".format(len(traces), samples)
 
     simple_sensor = "({0} v {1})".format(pp.initial_state[1], pp.positive_goals[-1]).replace(",", "").replace("\'", "")
     print "Simple sensor: " + simple_sensor
     gp = GP(False)
-    # tpr, tnr, fpr, fnr = 0, 0, 0, 0
+    tpr, tnr, fpr, fnr = 0, 0, 0, 0
     tpr, tnr, fpr, fnr = gp.build_sensor(pp.domain, simple_sensor, traces, popSize, nGens)
 
     ss_stats[0] = [i,
@@ -133,13 +133,12 @@ def gp_generate(domain_filename,i,problem_filename,samples,popSize,nGens, planne
     traces.append((tuple(pp.initial_state),tuple(plan) ,(tuple(pp.goal[0]), tuple(pp.goal[1]))))
     print "Plan length: ", len(plan)
 
-    complex_sensor = "({0} [{2}] {1})".format(pp.initial_state[1], pp.positive_goals[-1], len(plan) + 1).replace(",",
-                                                                                                                 "").replace(
-        "\'", "")
+    complex_sensor = "({0} [{2}] {1})".format(pp.initial_state[1],
+                                              pp.positive_goals[-1], len(plan) + 1).replace(",","").replace("\'", "")
     print "Complex sensor: " + complex_sensor
     gp = GP(False)
-    tpr, tnr, fpr, fnr = 0, 0, 0, 0
-    # tpr, tnr, fpr, fnr = gp.build_sensor(pp.domain, complex_sensor, traces, popSize, nGens)
+    # tpr, tnr, fpr, fnr = 0, 0, 0, 0
+    tpr, tnr, fpr, fnr = gp.build_sensor(pp.domain, complex_sensor, traces, popSize, nGens)
 
     cs_stats[0] = [i,
                        len(pp.domain.all_facts),
