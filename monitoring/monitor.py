@@ -49,6 +49,7 @@ def sample_trace(domain, ignore_empty = True, planner=Propositional_Planner()):
                 trace = (s0, tuple(plan), sg)
     return trace
 
+
 def sample_traces(domain_file, max_samples=100, ignore_empty = True, planner=Propositional_Planner()):
     traces = []
     domain = get_domain(domain_file)

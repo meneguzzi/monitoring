@@ -207,7 +207,6 @@ class PDDL_Planner(object):
 
         return False
 
-
     def solve(self, domain, initial_state, goal_state):
         raise NotImplementedError( "PDDL Planners need to implement solve" )
 

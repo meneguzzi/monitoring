@@ -89,7 +89,7 @@ class GP(object):
         return (tpr,tnr,fpr,fnr)
 
 
-def gp_generate(domain_filename,i,problem_filename,samples,popSize,nGens):
+def gp_generate(domain_filename,i,problem_filename,samples,popSize,nGens, planner_time_limit=0.0, max_length=0):
     ss_stats = np.zeros((1, 9))  # Stats for the simple sensor
     cs_stats = np.zeros((1, 9))  # Stats for the complex sensor
     pp = PDDL_Parser()
@@ -100,7 +100,7 @@ def gp_generate(domain_filename,i,problem_filename,samples,popSize,nGens):
 
     traces = []
     print "Sampling {0} traces for domain {1}".format(samples, domain_filename)
-    traces = monitoring.monitor.sample_traces(domain_filename, samples)
+    traces = monitoring.monitor.sample_traces(domain_filename, samples, planner=Propositional_Planner(time_limit=planner_time_limit, max_length=max_length))
     # for i in range(0,samples):
     #     traces.append(monitoring.monitor.sample_trace(pp.domain))
     print "Generated {0} valid traces from a sample of {1}".format(len(traces), samples)
@@ -124,7 +124,7 @@ def gp_generate(domain_filename,i,problem_filename,samples,popSize,nGens):
                fmt='%d %d %d %d %d %.4f %.4f %.4f %.4f', delimiter=" ", newline="\n",
                header="Index, #Predicates, #Actions, #States, #Traces, TPR, TNR, FPR, FNR", footer="", comments="")
 
-    planner = Propositional_Planner()
+    planner = Propositional_Planner(time_limit=0.3)
     print "Solving sample problem for " + problem_filename
     plan = planner.solve(pp.domain, pp.initial_state, pp.goal)
     print "Plan length: ", len(plan)
@@ -160,12 +160,14 @@ def main(argv):
     samples = 200
     popSize = 100
     nGens = 100
+    planner_time_limit = 0.02
+    max_length = 15
 
     if len(argv) > 1:
         i = int(argv[1])
         domain_filename = 'examples/psr-small/domain{0}.pddl'.format("%02d" % i)
         problem_filename = 'examples/psr-small/task{0}.pddl'.format("%02d" % i)
-        gp_generate(domain_filename, i, problem_filename, samples, popSize, nGens)
+        gp_generate(domain_filename, i, problem_filename, samples, popSize, nGens, planner_time_limit, max_length)
 
     # ipreds,iactions,istate_space,traces, itpr,itnr,ifpr,ifnr = 1, 2, 3, 4, 5, 6, 7, 8
     ss_stats = np.zeros((experiments, 9))  # Stats for the simple sensor
@@ -188,7 +190,7 @@ def main(argv):
 
         traces = []
         print "Sampling {0} traces for domain {1}".format(samples, domain_filename)
-        traces = monitoring.monitor.sample_traces(domain_filename, samples)
+        traces = monitoring.monitor.sample_traces(domain_filename, samples, planner=Propositional_Planner(time_limit=planner_time_limit, max_length=max_length))
         print "Generated {0} valid traces from a sample of {1}".format(len(traces), samples)
 
         simple_sensor = "({0} v {1})".format(pp.initial_state[1], pp.positive_goals[-1]).replace(",", "").replace("\'",
