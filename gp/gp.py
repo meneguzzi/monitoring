@@ -8,6 +8,7 @@ from gpOps import GPOps
 import monitoring.monitor
 from monitoring.monitor import evaluate_sensor_on_traces
 from pddl.propositional_planner import Propositional_Planner
+import numpy as np
 
 class GP(object):
     def __init__(self,verbose=True):
@@ -87,7 +88,70 @@ class GP(object):
 
         return (tpr,tnr,fpr,fnr)
 
-if __name__ == '__main__':
+
+def gp_generate(domain_filename,i,problem_filename,samples,popSize,nGens):
+    ss_stats = np.zeros((1, 9))  # Stats for the simple sensor
+    cs_stats = np.zeros((1, 9))  # Stats for the complex sensor
+    pp = PDDL_Parser()
+    pp.parse_domain(domain_filename)
+    pp.parse_problem(problem_filename)
+    pp.domain.groundify()
+    print "Processing ", domain_filename
+
+    traces = []
+    print "Sampling {0} traces for domain {1}".format(samples, domain_filename)
+    traces = monitoring.monitor.sample_traces(domain_filename, samples)
+    # for i in range(0,samples):
+    #     traces.append(monitoring.monitor.sample_trace(pp.domain))
+    print "Generated {0} valid traces from a sample of {1}".format(len(traces), samples)
+
+    simple_sensor = "({0} v {1})".format(pp.initial_state[1], pp.positive_goals[-1]).replace(",", "").replace("\'", "")
+    print "Simple sensor: " + simple_sensor
+    gp = GP(False)
+    tpr, tnr, fpr, fnr = 0, 0, 0, 0
+    tpr, tnr, fpr, fnr = gp.build_sensor(pp.domain, simple_sensor, traces, popSize, nGens)
+
+    ss_stats[0] = [i,
+                       len(pp.domain.all_facts),
+                       len(pp.domain.actions),
+                       len(pp.domain.state_space),
+                       len(traces),
+                       tpr, tnr, fpr, fnr]
+
+    # Saving files in the middle of the loop in case of process kills
+    print "Writing sats to psr-ss.txt"
+    np.savetxt("psr-ss{0}.txt".format(domain_filename), ss_stats,
+               fmt='%d %d %d %d %d %.4f %.4f %.4f %.4f', delimiter=" ", newline="\n",
+               header="Index, #Predicates, #Actions, #States, #Traces, TPR, TNR, FPR, FNR", footer="", comments="")
+
+    planner = Propositional_Planner()
+    print "Solving sample problem for " + problem_filename
+    plan = planner.solve(pp.domain, pp.initial_state, pp.goal)
+    print "Plan length: ", len(plan)
+
+    complex_sensor = "({0} [{2}] {1})".format(pp.initial_state[1], pp.positive_goals[-1], len(plan) + 1).replace(",",
+                                                                                                                 "").replace(
+        "\'", "")
+    print "Complex sensor: " + complex_sensor
+    gp = GP(False)
+    tpr, tnr, fpr, fnr = 0, 0, 0, 0
+    tpr, tnr, fpr, fnr = gp.build_sensor(pp.domain, complex_sensor, traces, popSize, nGens)
+
+    cs_stats[0] = [i,
+                       len(pp.domain.all_facts),
+                       len(pp.domain.actions),
+                       len(pp.domain.state_space),
+                       len(traces),
+                       tpr, tnr, fpr, fnr]
+
+    # Saving files in the middle of the loop in case of process kills
+    print "Writing sats to psr-cs.txt"
+    np.savetxt("psr-cs.txt{0}".format(domain_filename), cs_stats,
+               fmt='%d %d %d %d %d %.4f %.4f %.4f %.4f', delimiter=" ", newline="\n",
+               header="Index, #Predicates, #Actions, #States, #Traces, TPR, TNR, FPR, FNR", footer="", comments="")
+
+
+def main(argv):
     # gp = GP()
     # gp.build_sensor_for_domain('examples/psr-small/domain01.pddl',"((NOT-UPDATED-CB1) v (UPDATED-CB1))",1000)
     domain_template = 'examples/psr-small/domain{0}.pddl'
@@ -96,23 +160,28 @@ if __name__ == '__main__':
     samples = 200
     popSize = 100
     nGens = 100
-    import numpy as np
 
-    #ipreds,iactions,istate_space,traces, itpr,itnr,ifpr,ifnr = 1, 2, 3, 4, 5, 6, 7, 8
-    ss_stats = np.zeros((experiments,9)) #Stats for the simple sensor
-    cs_stats = np.zeros((experiments,9)) #Stats for the complex sensor
+    if len(argv) > 1:
+        i = int(argv[1])
+        domain_filename = 'examples/psr-small/domain{0}.pddl'.format("%02d" % i)
+        problem_filename = 'examples/psr-small/task{0}.pddl'.format("%02d" % i)
+        gp_generate(domain_filename, i, problem_filename, samples, popSize, nGens)
+
+    # ipreds,iactions,istate_space,traces, itpr,itnr,ifpr,ifnr = 1, 2, 3, 4, 5, 6, 7, 8
+    ss_stats = np.zeros((experiments, 9))  # Stats for the simple sensor
+    cs_stats = np.zeros((experiments, 9))  # Stats for the complex sensor
 
     skip = []
     # skip = [2,20]
 
-    for i in range(1,experiments+1):
-        if i in skip: print "Skipping {0}".format(i); continue # Skipping overlong domains
+    for i in range(1, experiments + 1):
+        if i in skip: print "Skipping {0}".format(i); continue  # Skipping overlong domains
         domain_filename = 'examples/psr-small/domain{0}.pddl'.format("%02d" % i)
         problem_filename = 'examples/psr-small/task{0}.pddl'.format("%02d" % i)
         pp = PDDL_Parser()
         pp.parse_domain(domain_filename)
         pp.parse_problem(problem_filename)
-        print "Processing ",domain_filename
+        print "Processing ", domain_filename
 
         # if len(pp.domain.actions) > 20 : print "Skipping overlong domain"; continue
         if len(pp.domain.all_facts) > 20: print "Skipping overlong domain"; continue
@@ -122,18 +191,19 @@ if __name__ == '__main__':
         traces = monitoring.monitor.sample_traces(domain_filename, samples)
         print "Generated {0} valid traces from a sample of {1}".format(len(traces), samples)
 
-        simple_sensor = "({0} v {1})".format(pp.initial_state[1],pp.positive_goals[-1]).replace(",","").replace("\'","")
-        print "Simple sensor: "+simple_sensor
+        simple_sensor = "({0} v {1})".format(pp.initial_state[1], pp.positive_goals[-1]).replace(",", "").replace("\'",
+                                                                                                                  "")
+        print "Simple sensor: " + simple_sensor
         gp = GP(False)
         tpr, tnr, fpr, fnr = 0, 0, 0, 0
-        tpr, tnr, fpr, fnr = gp.build_sensor(pp.domain,simple_sensor,traces,popSize,nGens)
+        tpr, tnr, fpr, fnr = gp.build_sensor(pp.domain, simple_sensor, traces, popSize, nGens)
 
-        ss_stats[i-1] = [i,
-                         len(pp.domain.all_facts),
-                         len(pp.domain.actions),
-                         len(pp.domain.state_space),
-                         len(traces),
-                         tpr, tnr, fpr, fnr]
+        ss_stats[i - 1] = [i,
+                           len(pp.domain.all_facts),
+                           len(pp.domain.actions),
+                           len(pp.domain.state_space),
+                           len(traces),
+                           tpr, tnr, fpr, fnr]
 
         # Saving files in the middle of the loop in case of process kills
         print "Writing sats to psr-ss.txt"
@@ -142,16 +212,16 @@ if __name__ == '__main__':
                    header="Index, #Predicates, #Actions, #States, #Traces, TPR, TNR, FPR, FNR", footer="", comments="")
 
         planner = Propositional_Planner()
-        print "Solving sample problem for "+problem_filename
-        plan = planner.solve(pp.domain,pp.initial_state,pp.goal)
-        print "Plan length: " , len(plan)
+        print "Solving sample problem for " + problem_filename
+        plan = planner.solve(pp.domain, pp.initial_state, pp.goal)
+        print "Plan length: ", len(plan)
 
-        complex_sensor = "({0} [{2}] {1})".format(pp.initial_state[1], pp.positive_goals[-1],len(plan)+1).replace(",","").replace("\'","")
+        complex_sensor = "({0} [{2}] {1})".format(pp.initial_state[1], pp.positive_goals[-1], len(plan) + 1).replace(
+            ",", "").replace("\'", "")
         print "Complex sensor: " + complex_sensor
         gp = GP(False)
         tpr, tnr, fpr, fnr = 0, 0, 0, 0
-        tpr, tnr, fpr, fnr = gp.build_sensor(pp.domain,complex_sensor,traces,popSize,nGens)
-
+        tpr, tnr, fpr, fnr = gp.build_sensor(pp.domain, complex_sensor, traces, popSize, nGens)
 
         cs_stats[i - 1] = [i,
                            len(pp.domain.all_facts),
@@ -165,6 +235,11 @@ if __name__ == '__main__':
         np.savetxt("psr-cs.txt", cs_stats,
                    fmt='%d %d %d %d %d %.4f %.4f %.4f %.4f', delimiter=" ", newline="\n",
                    header="Index, #Predicates, #Actions, #States, #Traces, TPR, TNR, FPR, FNR", footer="", comments="")
+
+if __name__ == '__main__':
+    import sys
+    main(sys.argv)
+
 
 
 
