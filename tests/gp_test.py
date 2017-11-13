@@ -55,7 +55,7 @@ class GPTestCase(unittest.TestCase):
         gp = GP(False)
         (tpr, tnr, fpr, fnr) = gp.build_sensor_for_domain('examples/simple/simple.pddl',
                                                           "((p) v (q))", 1000)
-        self.assertGreater(tpr, 0.8)
+        self.assertGreater(tpr, 0.7)
 
     # @unittest.skipUnless(sys.platform.startswith("linux"), "Only test in Travis")
     @unittest.skip("Overlong test")
