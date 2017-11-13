@@ -16,4 +16,4 @@ STARTTIME=$(date +%s)
 
 ENDTIME=$(date +%s)
 
-~/slackMessage.sh -m "Finished monitoring simulation in $(($ENDTIME - $STARTTIME)) seconds"
+~/slackMessage.sh -m "Finished monitoring simulation in $(( ($ENDTIME - $STARTTIME)/60 )) minutes"
