@@ -171,7 +171,7 @@ def gp_generate(domain_filename,i,problem_filename,samples,popSize,nGens, planne
 
     # Saving files in the middle of the loop in case of process kills
     print "Writing sats to ", "psr-as{0}.txt".format("%02d" % i)
-    np.savetxt("psr-as{0}.txt".format("%02d" % i), cs_stats,
+    np.savetxt("psr-as{0}.txt".format("%02d" % i), as_stats,
                fmt='%d %d %d %d %d %.4f %.4f %.4f %.4f', delimiter=" ", newline="\n",
                header="Index, #Predicates, #Actions, #States, #Traces, TPR, TNR, FPR, FNR", footer="", comments="")
 
