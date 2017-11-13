@@ -32,10 +32,12 @@ class GP(object):
 
         return self.build_sensor(domain, model_sensor, traces, popSize, nGens)
 
-    def build_sensor(self, domain, modelSensor, traces, popSize=100, nGens=100, reproducePercent=0.8,mutatePercent=0.05,crossOverPercent=0.1):
+    def build_sensor(self, domain, modelSensor, traces,
+                     popSize=100, nGens=100, reproducePercent=0.8,mutatePercent=0.05,crossOverPercent=0.1,
+                     sensorDepth=1):
         terms = []
         for i in range(0, 15):
-            terms.append(Sensor.generate_sensor(domain, 1))
+            terms.append(Sensor.generate_sensor(domain, sensorDepth))
         print terms
         ng = NodeGenerator(terms, 1, 5, 2, 5)
 
@@ -89,9 +91,10 @@ class GP(object):
         return (tpr,tnr,fpr,fnr)
 
 
-def gp_generate(domain_filename,i,problem_filename,samples,popSize,nGens, planner_time_limit=0.0, max_length=0):
+def gp_generate(domain_filename,i,problem_filename,samples,popSize,nGens, planner_time_limit=0.0, max_length=0, sensor_depth=1):
     ss_stats = np.zeros((1, 9))  # Stats for the simple sensor
     cs_stats = np.zeros((1, 9))  # Stats for the complex sensor
+    as_stats = np.zeros((1, 9))  # Stats for the action sensor
     pp = PDDL_Parser()
     pp.parse_domain(domain_filename)
     pp.parse_problem(problem_filename)
@@ -112,7 +115,7 @@ def gp_generate(domain_filename,i,problem_filename,samples,popSize,nGens, planne
     print "Simple sensor: " + simple_sensor
     gp = GP(False)
     tpr, tnr, fpr, fnr = 0, 0, 0, 0
-    tpr, tnr, fpr, fnr = gp.build_sensor(pp.domain, simple_sensor, traces, popSize, nGens)
+    tpr, tnr, fpr, fnr = gp.build_sensor(pp.domain, simple_sensor, traces, popSize, nGens, sensorDepth=sensor_depth)
 
     ss_stats[0] = [i,
                        len(pp.domain.all_facts),
@@ -137,8 +140,8 @@ def gp_generate(domain_filename,i,problem_filename,samples,popSize,nGens, planne
                                               pp.positive_goals[-1], len(plan) + 1).replace(",","").replace("\'", "")
     print "Complex sensor: " + complex_sensor
     gp = GP(False)
-    # tpr, tnr, fpr, fnr = 0, 0, 0, 0
-    tpr, tnr, fpr, fnr = gp.build_sensor(pp.domain, complex_sensor, traces, popSize, nGens)
+    tpr, tnr, fpr, fnr = 0, 0, 0, 0
+    tpr, tnr, fpr, fnr = gp.build_sensor(pp.domain, complex_sensor, traces, popSize, nGens, sensorDepth=sensor_depth)
 
     cs_stats[0] = [i,
                        len(pp.domain.all_facts),
@@ -153,6 +156,60 @@ def gp_generate(domain_filename,i,problem_filename,samples,popSize,nGens, planne
                fmt='%d %d %d %d %d %.4f %.4f %.4f %.4f', delimiter=" ", newline="\n",
                header="Index, #Predicates, #Actions, #States, #Traces, TPR, TNR, FPR, FNR", footer="", comments="")
 
+    action_sensor = sensor_for_action(plan[0])
+    print "Action sensor: " + action_sensor
+    gp = GP(False)
+    tpr, tnr, fpr, fnr = 0, 0, 0, 0
+    tpr, tnr, fpr, fnr = gp.build_sensor(pp.domain, action_sensor, traces, popSize, nGens, sensorDepth=sensor_depth)
+
+    as_stats[0] = [i,
+                   len(pp.domain.all_facts),
+                   len(pp.domain.actions),
+                   len(pp.domain.state_space),
+                   len(traces),
+                   tpr, tnr, fpr, fnr]
+
+    # Saving files in the middle of the loop in case of process kills
+    print "Writing sats to ", "psr-as{0}.txt".format("%02d" % i)
+    np.savetxt("psr-as{0}.txt".format("%02d" % i), cs_stats,
+               fmt='%d %d %d %d %d %.4f %.4f %.4f %.4f', delimiter=" ", newline="\n",
+               header="Index, #Predicates, #Actions, #States, #Traces, TPR, TNR, FPR, FNR", footer="", comments="")
+
+
+def sensor_for_action(action):
+    precond = ""
+    pos_precond = "{0}" if len(action.positive_preconditions) > 0 else "True"
+    neg_precond = "{0}" if len(action.negative_preconditions) > 0 else "True"
+    for i in range(0, len(action.positive_preconditions)):
+        if i == len(action.positive_preconditions) - 1:
+            pos_precond = pos_precond.format(str(action.positive_preconditions[i]))
+        else:
+            pos_precond = "({0} ^ {1})".format(pos_precond.format(str(action.positive_preconditions[i])),"{0}")
+
+    for i in range(0, len(action.negative_preconditions)):
+        if i == len(action.negative_preconditions) - 1:
+            neg_precond = neg_precond.format("-"+str(action.negative_preconditions[i]))
+        else:
+            neg_precond = "({0} ^ {1})".format(neg_precond.format("-"+str(action.negative_preconditions[i])),"{0}")
+
+    precond = "({0} ^ {1})".format(pos_precond,neg_precond)
+
+    pos_precond = "{0}" if len(action.add_effects) > 0 else "True"
+    neg_precond = "{0}" if len(action.del_effects) > 0 else "True"
+    for i in range(0, len(action.add_effects)):
+        if i == len(action.add_effects) - 1:
+            pos_precond = pos_precond.format(str(action.add_effects[i]))
+        else:
+            pos_precond = "({0} ^ {1})".format(pos_precond.format(str(action.add_effects[i])), "{0}")
+
+    for i in range(0, len(action.del_effects)):
+        if i == len(action.del_effects) - 1:
+            neg_precond = neg_precond.format("-" + str(action.del_effects[i]))
+        else:
+            neg_precond = "({0} ^ {1})".format(neg_precond.format("-" + str(action.del_effects[i])), "{0}")
+
+    effect = "({0} ^ {1})".format(pos_precond,neg_precond)
+    return "({0} [1] {1})".format(precond,effect);
 
 def main(argv):
     # gp = GP()
@@ -165,12 +222,13 @@ def main(argv):
     nGens = 100
     planner_time_limit = 0.02
     max_length = 10
+    sensor_depth = 3
 
     if len(argv) > 1:
         i = int(argv[1])
         domain_filename = 'examples/psr-small/domain{0}.pddl'.format("%02d" % i)
         problem_filename = 'examples/psr-small/task{0}.pddl'.format("%02d" % i)
-        gp_generate(domain_filename, i, problem_filename, samples, popSize, nGens, planner_time_limit, max_length)
+        gp_generate(domain_filename, i, problem_filename, samples, popSize, nGens, planner_time_limit, max_length, sensor_depth)
         exit(0)
 
     # ipreds,iactions,istate_space,traces, itpr,itnr,ifpr,ifnr = 1, 2, 3, 4, 5, 6, 7, 8
@@ -202,7 +260,7 @@ def main(argv):
         print "Simple sensor: " + simple_sensor
         gp = GP(False)
         tpr, tnr, fpr, fnr = 0, 0, 0, 0
-        tpr, tnr, fpr, fnr = gp.build_sensor(pp.domain, simple_sensor, traces, popSize, nGens)
+        tpr, tnr, fpr, fnr = gp.build_sensor(pp.domain, simple_sensor, traces, popSize, nGens, sensorDepth=sensor_depth)
 
         ss_stats[i - 1] = [i,
                            len(pp.domain.all_facts),
@@ -227,7 +285,7 @@ def main(argv):
         print "Complex sensor: " + complex_sensor
         gp = GP(False)
         tpr, tnr, fpr, fnr = 0, 0, 0, 0
-        tpr, tnr, fpr, fnr = gp.build_sensor(pp.domain, complex_sensor, traces, popSize, nGens)
+        tpr, tnr, fpr, fnr = gp.build_sensor(pp.domain, complex_sensor, traces, popSize, nGens, sensorDepth=sensor_depth)
 
         cs_stats[i - 1] = [i,
                            len(pp.domain.all_facts),
