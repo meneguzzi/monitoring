@@ -2,6 +2,8 @@
 
 git pull
 
+export PYTHONPATH=.
+
 ~/slackMessage.sh -m "Started monitoring simulation at `hostname`"
 
 STARTTIME=$(date +%s)
