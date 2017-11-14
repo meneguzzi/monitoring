@@ -2,12 +2,12 @@ import random
 from nodeGenerator import NodeGenerator
 import gpOps
 import functools
-from monitoring.monitor import evaluate_sensor_on_traces
+from monitoring.monitor import evaluate_sensor_on_traces, MonitorSynthesizer
 
 
 class Population:
   """ng is the initial population generator"""
-  def __init__(self,num,ng,reproducePercent,mutatePercent,crossOverPercent,gpOps,modelSensor,traces):
+  def __init__(self,num,ng,reproducePercent,mutatePercent,crossOverPercent,gpOps,modelSensor,traces, mp=MonitorSynthesizer()):
     self.num=num
     self.ng=ng
     self.pop=[]
@@ -20,13 +20,14 @@ class Population:
     self.modelSensor=modelSensor
     self.traces=traces
     self.gpOps=gpOps
+    self.mp = mp
 
      
   def iterate(self):
     fitness={}
-    desired=evaluate_sensor_on_traces(self.traces,self.modelSensor)
+    desired=self.mp.evaluate_sensor_on_traces(self.traces,self.modelSensor)
     for p in self.pop:
-        actual=evaluate_sensor_on_traces(self.traces,p.compile())
+        actual=self.mp.evaluate_sensor_on_traces(self.traces,p.compile())
 
 
         tp=set(desired[0]) & set(actual[0])

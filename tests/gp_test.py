@@ -50,7 +50,7 @@ class GPTestCase(unittest.TestCase):
         gpo = GPOps(terms, 1, 5, 1, 4)
         pop = Population(100, ng, 0.8, 0.05, 0.1, gpo, sp.parse_sensor("((NOT-UPDATED-CB1) v (UPDATED-CB1))"), traces)
 
-    @unittest.skipUnless(sys.platform.startswith("linux"), "Only test in Travis")
+    #@unittest.skipUnless(sys.platform.startswith("linux"), "Only test in Travis")
     def test_new_gp_small(self):
         gp = GP(False)
         (tpr, tnr, fpr, fnr) = gp.build_sensor_for_domain('examples/simple/simple.pddl',

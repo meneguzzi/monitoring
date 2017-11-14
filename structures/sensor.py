@@ -86,6 +86,9 @@ class Sensor():
 
         return self.op
 
+    def __hash__(self):
+        return hash((self.lhs,self.op,self.rhs))
+
     def __repr__(self):
         s = "("
         if self.is_negated():

@@ -6,7 +6,7 @@ from nodeGenerator import NodeGenerator
 from population import Population
 from gpOps import GPOps
 import monitoring.monitor
-from monitoring.monitor import evaluate_sensor_on_traces
+from monitoring.monitor import evaluate_sensor_on_traces, MonitorSynthesizer
 from pddl.propositional_planner import Propositional_Planner
 import numpy as np
 
@@ -14,6 +14,7 @@ class GP(object):
     def __init__(self,verbose=True):
         self.verbose = verbose
         self.state_space = []
+        self.ms = MonitorSynthesizer()
 
     def build_sensor_for_domain(self, pddl, model_sensor, samples, popSize=100, nGens=100):
         parser = PDDL_Parser()
@@ -44,7 +45,7 @@ class GP(object):
         sp = Sensor_Parser()
         gpo = GPOps(terms, 1, 5, 1, 4)
 
-        pop = Population(popSize, ng, reproducePercent, mutatePercent, crossOverPercent, gpo, sp.parse_sensor(modelSensor), traces)
+        pop = Population(popSize, ng, reproducePercent, mutatePercent, crossOverPercent, gpo, sp.parse_sensor(modelSensor), traces, self.ms)
 
         for i in range(0, nGens):
             if self.verbose: print "g", i
@@ -66,8 +67,8 @@ class GP(object):
             if v > m:
                 m = v
                 p = k
-        d = evaluate_sensor_on_traces(traces, sp.parse_sensor(modelSensor))
-        a = evaluate_sensor_on_traces(traces, p.compile())
+        d = self.ms.evaluate_sensor_on_traces(traces, sp.parse_sensor(modelSensor))
+        a = self.ms.evaluate_sensor_on_traces(traces, p.compile())
 
         total = len(traces)
         tp = set(d[0]) & set(a[0])

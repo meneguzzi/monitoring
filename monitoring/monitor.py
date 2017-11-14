@@ -12,7 +12,15 @@ import random
 class MonitorSynthesizer():
 
     def __init__(self):
-        pass
+        self.cache = {}
+
+    def evaluate_sensor_on_traces(self,traces,sensor):
+        if sensor in self.cache:
+            return self.cache[sensor]
+        valid, invalid = evaluate_sensor_on_traces(traces,sensor)
+        self.cache[sensor] = (valid, invalid)
+        return (valid, invalid)
+
 
 
 def get_domain(domain_file):
@@ -95,12 +103,7 @@ def generate_all_traces(domain_file, planner = Propositional_Planner()):
             #print "No plan between "+str(s0)+" and "+str(sg)
     return traces
 
-
-cache={}
-
 def evaluate_sensor_on_traces(traces,sensor):
-    if sensor in cache:
-            return cache[sensor]
     assert isinstance(sensor, Sensor)
     valid = []
     invalid = []
@@ -111,7 +114,6 @@ def evaluate_sensor_on_traces(traces,sensor):
             valid.append(t)
         else:
             invalid.append(t)
-    self.cache[sensor]=(valid,invalid)        
     return (valid,invalid)
 
 # if __name__ == '__main__':
