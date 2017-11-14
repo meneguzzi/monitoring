@@ -102,7 +102,7 @@ class Sensor():
             s += str(self.lhs)
         else:
             # s += str(self.lhs) if isinstance(self.lhs, Sensor) else str(self.lhs[0])
-            if isinstance(self.lhs, Sensor):
+            if isinstance(self.lhs, Sensor) or isinstance(self.lhs, bool):
                 s += str(self.lhs)
             elif isinstance(self.lhs, tuple):
                 s += self.lhs[0]
@@ -132,35 +132,19 @@ true = Sensor(True)
 def models(sigma, t, s):
     # assert isinstance(sigma, Sensor)
     # assert isinstance(t, structures.domain.Trace)
-    global cache
-    if (sigma,t,s) in cache:
-            print "hitc"
-            return cache[(sigma,t,s)]
-
     assert isinstance(s, structures.domain.State)
     if sigma.is_atom():
-        cache[(sigma,t,s)]= sigma.lhs is True or sigma.lhs in s    
-        return cache[(sigma,t,s)]
-        #return sigma.lhs is True or sigma.lhs in s
+        return sigma.lhs is True or sigma.lhs in s
     elif sigma.is_negated():
-        #return sigma.lhs not in s
-        cache[(sigma,t,s)]=not models(sigma.lhs,t,s)
-        return cache[(sigma,t,s)]
-        #return not models(sigma.lhs, t, s)
+        return not models(sigma.lhs, t, s)
     else:
         if sigma.op == sigma.land:
-            cache[(sigma,t,s)]=models(sigma.lhs, t, s) and models(sigma.rhs, t, s)
-            return cache[(sigma,t,s)]
-            #return models(sigma.lhs, t, s) and models(sigma.rhs, t, s)
+            return models(sigma.lhs, t, s) and models(sigma.rhs, t, s)
         elif sigma.op == sigma.lor:
-            cache[(sigma,t,s)]=models(sigma.lhs, t, s) or models(sigma.rhs, t, s)
-            return cache[(sigma,t,s)]
-            #return models(sigma.lhs, t, s) or models(sigma.rhs, t, s)
+            return models(sigma.lhs, t, s) or models(sigma.rhs, t, s)
         elif sigma.is_path_formula():
             if sigma.op == 0 or len(t) == 0:
-                cache[(sigma,t,s)]=models(sigma.lhs, t, s) and models(sigma.rhs, t, s)
-                return cache[(sigma,t,s)]
-                #return models(sigma.lhs, t, s) and models(sigma.rhs, t, s)
+                return models(sigma.lhs, t, s) and models(sigma.rhs, t, s)
             else:
                 a = t[0]
                 assert isinstance(a, structures.domain.Action)
@@ -168,21 +152,67 @@ def models(sigma, t, s):
                 sp = a.result(s)
                 if models(sigma.lhs, t, s):
                     if not models(sigma.rhs, t, s):
-                        #return models(Sensor(true, sigma.op - 1, sigma.rhs), tp, sp)
-                        cache[(sigma,t,s)]=models(Sensor(true, sigma.op - 1, sigma.rhs), tp, sp)
-                        return cache[(sigma,t,s)]
+                        return models(Sensor(true, sigma.op - 1, sigma.rhs), tp, sp)
                     else:
-                        #cache[(sigma,t,s)]=True    
-                        #return cache[(sigma,t,s)]
                         return True
                 else:
-                    cache[(sigma,t,s)]=models(sigma,tp,sp)    
-                    return cache[(sigma,t,s)]
-                    #return models(sigma, tp, sp)
+                    return models(sigma, tp, sp)
         else:
             raise Exception
-        return cache[(sigma,t,s)]    
 
+
+# def models(sigma, t, s):
+#     # assert isinstance(sigma, Sensor)
+#     # assert isinstance(t, structures.domain.Trace)
+#     global cache
+#     if (sigma,tuple(t),s) in cache:
+#             print "hitc"
+#             return cache[(sigma,t,s)]
+#
+#     assert isinstance(s, structures.domain.State)
+#     if sigma.is_atom():
+#         cache[(sigma,t,s)]= sigma.lhs is True or sigma.lhs in s
+#         return cache[(sigma,t,s)]
+#         #return sigma.lhs is True or sigma.lhs in s
+#     elif sigma.is_negated():
+#         cache[(sigma,t,s)]=not models(sigma.lhs,t,s)
+#         return cache[(sigma,t,s)]
+#         #return not models(sigma.lhs, t, s)
+#     else:
+#         if sigma.op == sigma.land:
+#             cache[(sigma,t,s)]=models(sigma.lhs, t, s) and models(sigma.rhs, t, s)
+#             return cache[(sigma,t,s)]
+#             #return models(sigma.lhs, t, s) and models(sigma.rhs, t, s)
+#         elif sigma.op == sigma.lor:
+#             cache[(sigma,t,s)]=models(sigma.lhs, t, s) or models(sigma.rhs, t, s)
+#             return cache[(sigma,t,s)]
+#             #return models(sigma.lhs, t, s) or models(sigma.rhs, t, s)
+#         elif sigma.is_path_formula():
+#             if sigma.op == 0 or len(t) == 0:
+#                 cache[(sigma,t,s)]=models(sigma.lhs, t, s) and models(sigma.rhs, t, s)
+#                 return cache[(sigma,t,s)]
+#                 #return models(sigma.lhs, t, s) and models(sigma.rhs, t, s)
+#             else:
+#                 a = t[0]
+#                 assert isinstance(a, structures.domain.Action)
+#                 tp = t[1:]
+#                 sp = a.result(s)
+#                 if models(sigma.lhs, t, s):
+#                     if not models(sigma.rhs, t, s):
+#                         #return models(Sensor(true, sigma.op - 1, sigma.rhs), tp, sp)
+#                         cache[(sigma,t,s)]=models(Sensor(true, sigma.op - 1, sigma.rhs), tp, sp)
+#                         return cache[(sigma,t,s)]
+#                     else:
+#                         #cache[(sigma,t,s)]=True
+#                         #return cache[(sigma,t,s)]
+#                         return True
+#                 else:
+#                     cache[(sigma,t,s)]=models(sigma,tp,sp)
+#                     return cache[(sigma,t,s)]
+#                     #return models(sigma, tp, sp)
+#         else:
+#             raise Exception
+#         return cache[(sigma,t,s)]
 
 class Sensor_Parser():
 
@@ -272,13 +302,49 @@ class Sensor_Parser():
             raise 'Expression ' + str(tokens) + ' does not match a sensor'
 
     def parse_symbol(self,str):
-        if str == "True":
+        if str == "true":
             return True
-        elif str == "False":
+        elif str == "false":
             return False
         else:
             return tuple(str)
 
+
+# TODO Move this into the parser class?
+def sensor_for_action(action):
+    precond = ""
+    pos_precond = "{0}" if len(action.positive_preconditions) > 0 else "True"
+    neg_precond = "{0}" if len(action.negative_preconditions) > 0 else "True"
+    for i in range(0, len(action.positive_preconditions)):
+        if i == len(action.positive_preconditions) - 1:
+            pos_precond = pos_precond.format(str(action.positive_preconditions[i]))
+        else:
+            pos_precond = "({0} ^ {1})".format(pos_precond.format(str(action.positive_preconditions[i])),"{0}")
+
+    for i in range(0, len(action.negative_preconditions)):
+        if i == len(action.negative_preconditions) - 1:
+            neg_precond = neg_precond.format("(-"+str(action.negative_preconditions[i])+")")
+        else:
+            neg_precond = "({0} ^ {1})".format(neg_precond.format("(-"+str(action.negative_preconditions[i]))+")","{0}")
+
+    precond = "({0} ^ {1})".format(pos_precond,neg_precond)
+
+    pos_precond = "{0}" if len(action.add_effects) > 0 else "True"
+    neg_precond = "{0}" if len(action.del_effects) > 0 else "True"
+    for i in range(0, len(action.add_effects)):
+        if i == len(action.add_effects) - 1:
+            pos_precond = pos_precond.format(str(action.add_effects[i]))
+        else:
+            pos_precond = "({0} ^ {1})".format(pos_precond.format(str(action.add_effects[i])), "{0}")
+
+    for i in range(0, len(action.del_effects)):
+        if i == len(action.del_effects) - 1:
+            neg_precond = neg_precond.format("(-" + str(action.del_effects[i])+")")
+        else:
+            neg_precond = "({0} ^ {1})".format(neg_precond.format("(-" + str(action.del_effects[i]))+")", "{0}")
+
+    effect = "({0} ^ {1})".format(pos_precond,neg_precond)
+    return "({0} [1] {1})".format(precond,effect).replace(",","").replace("'","");
 
 def sand(s1,s2):
     return Sensor(s1,"^",s2)

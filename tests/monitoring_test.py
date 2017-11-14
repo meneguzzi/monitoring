@@ -1,7 +1,7 @@
 import unittest
 
 from structures.domain import Domain, Action, State, Trace
-from structures.sensor import Sensor, Sensor_Parser
+from structures.sensor import Sensor, Sensor_Parser, sensor_for_action
 from pddl.PDDL import PDDL_Parser
 from pddl.propositional_planner import Propositional_Planner
 from pddl.heuristic_planner import Heuristic_Planner
@@ -110,6 +110,7 @@ class MonitoringTestCase(unittest.TestCase):
         print "Invalid traces for sensor a: " + str(len(set(a[1])))
         self.assertNotEqual(len(set(a[1])), len(set(b[1])))
 
+    @unittest.skipUnless(sys.platform.startswith("linux"), "Only test in Travis")
     def test_evaluate_temporal_sensor_on_traces(self):
         """ test demorgan"""
         simplePDDL = 'examples/simple/simple.pddl'
@@ -130,7 +131,7 @@ class MonitoringTestCase(unittest.TestCase):
         print "Invalid traces for sensor a: " + str(len(set(a[1])))
         self.assertNotEqual(len(set(a[1])), len(set(b[1])))
 
-    #@unittest.skipUnless(sys.platform.startswith("linux"), "Only test in Travis")
+    @unittest.skipUnless(sys.platform.startswith("linux"), "Only test in Travis")
     def test_evaluate_sensors_on_psr_domain(self):
         psrPDDL = 'examples/psr-small/domain01.pddl'
         sp = Sensor_Parser()
@@ -189,6 +190,32 @@ class MonitoringTestCase(unittest.TestCase):
             end = time.time()
             print "Trace sample took {0}s for {1} using {2}".format(end - start, pddl_file, planner.__class__.__name__)
 
+    def test_action_sensor(self):
+        psrPDDL = 'examples/psr-small/domain01.pddl'
+        sp = Sensor_Parser()
+        samples = 1000
+        print "Generating  {0} traces for {1}".format(samples, psrPDDL)
+        # Since this domain is too large, we need to sample
+        traces = monitoring.monitor.sample_traces(psrPDDL, samples)
+        # traces = monitoring.monitor.generate_all_traces(psrPDDL)
+        print "Generated {0} valid samples from a population of {1} states".format(len(traces), samples)
+
+        action = sensor_for_action(traces[0][1][0])
+
+        action_sensor = sp.parse_sensor(action)
+        self.assertIsNotNone(action_sensor)
+        self.assertTrue(action_sensor.is_model_of(traces[0][1], State(traces[0][0])),"Action {0} \n not detected by sensor {1} in \n {2}".format(traces[0][1][0],action_sensor,traces[0][1]))
+
+    def test_sensor_for_action(self):
+        parser = PDDL_Parser()
+        pddl = 'examples/psr-small/domain01.pddl'
+        parser.parse_domain(pddl)
+
+        s = sensor_for_action(parser.actions[0])
+        self.assertIsNotNone(s)
+
+        print "Action: ",parser.actions[0]
+        print "Sensor: ",s
 
 if __name__ == '__main__':
     unittest.main()

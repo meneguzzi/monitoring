@@ -2,7 +2,7 @@ import sys
 import unittest
 
 import monitoring.monitor
-from gp.gp import GP, sensor_for_action
+from gp.gp import GP
 from gp.gpOps import GPOps
 from gp.nodeGenerator import NodeGenerator
 from gp.population import Population
@@ -63,17 +63,6 @@ class GPTestCase(unittest.TestCase):
         gp = GP(False)
         (tpr,tnr,fpr,fnr) = gp.build_sensor_for_domain('examples/psr-small/domain01.pddl', "((NOT-UPDATED-CB1) v (UPDATED-CB1))", 1000)
         self.assertGreater(tpr,0.9)
-
-    def test_sensor_for_action(self):
-        parser = PDDL_Parser()
-        pddl = 'examples/psr-small/domain01.pddl'
-        parser.parse_domain(pddl)
-
-        s = sensor_for_action(parser.actions[0])
-        self.assertIsNotNone(s)
-
-        print "Action: ",parser.actions[0]
-        print "Sensor: ",s
 
 if __name__ == '__main__':
     unittest.main()

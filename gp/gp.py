@@ -6,7 +6,7 @@ from nodeGenerator import NodeGenerator
 from population import Population
 from gpOps import GPOps
 import monitoring.monitor
-from monitoring.monitor import evaluate_sensor_on_traces, MonitorSynthesizer
+from monitoring.monitor import MonitorSynthesizer
 from pddl.propositional_planner import Propositional_Planner
 import numpy as np
 
@@ -175,42 +175,6 @@ def gp_generate(domain_filename,i,problem_filename,samples,popSize,nGens, planne
     np.savetxt("psr-as{0}.txt".format("%02d" % i), as_stats,
                fmt='%d %d %d %d %d %.4f %.4f %.4f %.4f', delimiter=" ", newline="\n",
                header="Index, #Predicates, #Actions, #States, #Traces, TPR, TNR, FPR, FNR", footer="", comments="")
-
-
-def sensor_for_action(action):
-    precond = ""
-    pos_precond = "{0}" if len(action.positive_preconditions) > 0 else "True"
-    neg_precond = "{0}" if len(action.negative_preconditions) > 0 else "True"
-    for i in range(0, len(action.positive_preconditions)):
-        if i == len(action.positive_preconditions) - 1:
-            pos_precond = pos_precond.format(str(action.positive_preconditions[i]))
-        else:
-            pos_precond = "({0} ^ {1})".format(pos_precond.format(str(action.positive_preconditions[i])),"{0}")
-
-    for i in range(0, len(action.negative_preconditions)):
-        if i == len(action.negative_preconditions) - 1:
-            neg_precond = neg_precond.format("(-"+str(action.negative_preconditions[i])+")")
-        else:
-            neg_precond = "({0} ^ {1})".format(neg_precond.format("(-"+str(action.negative_preconditions[i]))+")","{0}")
-
-    precond = "({0} ^ {1})".format(pos_precond,neg_precond)
-
-    pos_precond = "{0}" if len(action.add_effects) > 0 else "True"
-    neg_precond = "{0}" if len(action.del_effects) > 0 else "True"
-    for i in range(0, len(action.add_effects)):
-        if i == len(action.add_effects) - 1:
-            pos_precond = pos_precond.format(str(action.add_effects[i]))
-        else:
-            pos_precond = "({0} ^ {1})".format(pos_precond.format(str(action.add_effects[i])), "{0}")
-
-    for i in range(0, len(action.del_effects)):
-        if i == len(action.del_effects) - 1:
-            neg_precond = neg_precond.format("(-" + str(action.del_effects[i])+")")
-        else:
-            neg_precond = "({0} ^ {1})".format(neg_precond.format("(-" + str(action.del_effects[i]))+")", "{0}")
-
-    effect = "({0} ^ {1})".format(pos_precond,neg_precond)
-    return "({0} [1] {1})".format(precond,effect);
 
 def main(argv):
     # gp = GP()
