@@ -271,7 +271,7 @@ def main(argv):
                            tpr, tnr, fpr, fnr]
 
         # Saving files in the middle of the loop in case of process kills
-        print "Writing sats to psr-ss.txt"
+        print "Writing stats to psr-ss.txt"
         np.savetxt("psr-ss.txt", ss_stats,
                    fmt='%d %d %d %d %d %.4f %.4f %.4f %.4f', delimiter=" ", newline="\n",
                    header="Index, #Predicates, #Actions, #States, #Traces, TPR, TNR, FPR, FNR", footer="", comments="")
