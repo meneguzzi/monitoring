@@ -2,6 +2,7 @@ import structures.domain
 import re
 import random
 
+cache={}
 
 class Sensor():
     neg = "-"
@@ -68,7 +69,12 @@ class Sensor():
         return isinstance(self.op, int)
 
     def is_model_of(self, trace, state):
-        return models(self, trace, state)
+        global cache
+        if (str(self),trace,state) in cache:
+                return cache[(str(self),trace,state)]
+        cache[(str(self),trace,state)]=models(self,trace,state)
+        return cache[(str(self),trace,state)]
+        #return models(self, trace, state)
 
     def __getitem__(self, item):
         if item == 0:
