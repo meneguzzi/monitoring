@@ -115,7 +115,7 @@ def gp_generate(domain_filename,i,problem_filename,samples,popSize,nGens, planne
     print "Simple sensor: " + simple_sensor
     gp = GP(False)
     tpr, tnr, fpr, fnr = 0, 0, 0, 0
-    # tpr, tnr, fpr, fnr = gp.build_sensor(pp.domain, simple_sensor, traces, popSize, nGens, sensorDepth=sensor_depth)
+    tpr, tnr, fpr, fnr = gp.build_sensor(pp.domain, simple_sensor, traces, popSize, nGens, sensorDepth=sensor_depth)
 
     ss_stats[0] = [i,
                        len(pp.domain.all_facts),
@@ -125,10 +125,10 @@ def gp_generate(domain_filename,i,problem_filename,samples,popSize,nGens, planne
                        tpr, tnr, fpr, fnr]
 
     # Saving files in the middle of the loop in case of process kills
-    print "Writing sats to ","psr-ss{0}.txt".format("%02d" % i)
-    # np.savetxt("psr-ss{0}.txt".format("%02d" % i), ss_stats,
-    #            fmt='%d %d %d %d %d %.4f %.4f %.4f %.4f', delimiter=" ", newline="\n",
-    #            header="Index, #Predicates, #Actions, #States, #Traces, TPR, TNR, FPR, FNR", footer="", comments="")
+    print "Writing stats to ","psr-ss{0}.txt".format("%02d" % i)
+    np.savetxt("psr-ss{0}.txt".format("%02d" % i), ss_stats,
+               fmt='%d %d %d %d %d %.4f %.4f %.4f %.4f', delimiter=" ", newline="\n",
+               header="Index, #Predicates, #Actions, #States, #Traces, TPR, TNR, FPR, FNR", footer="", comments="")
 
     planner = Propositional_Planner(time_limit=0.3)
     print "Solving sample problem for " + problem_filename
@@ -141,7 +141,7 @@ def gp_generate(domain_filename,i,problem_filename,samples,popSize,nGens, planne
     print "Complex sensor: " + complex_sensor
     gp = GP(False)
     tpr, tnr, fpr, fnr = 0, 0, 0, 0
-    # tpr, tnr, fpr, fnr = gp.build_sensor(pp.domain, complex_sensor, traces, popSize, nGens, sensorDepth=sensor_depth)
+    tpr, tnr, fpr, fnr = gp.build_sensor(pp.domain, complex_sensor, traces, popSize, nGens, sensorDepth=sensor_depth)
 
     cs_stats[0] = [i,
                        len(pp.domain.all_facts),
@@ -151,10 +151,10 @@ def gp_generate(domain_filename,i,problem_filename,samples,popSize,nGens, planne
                        tpr, tnr, fpr, fnr]
 
     # Saving files in the middle of the loop in case of process kills
-    print "Writing sats to ","psr-cs{0}.txt".format("%02d" % i)
-    # np.savetxt("psr-cs{0}.txt".format("%02d" % i), cs_stats,
-    #            fmt='%d %d %d %d %d %.4f %.4f %.4f %.4f', delimiter=" ", newline="\n",
-    #            header="Index, #Predicates, #Actions, #States, #Traces, TPR, TNR, FPR, FNR", footer="", comments="")
+    print "Writing stats to ","psr-cs{0}.txt".format("%02d" % i)
+    np.savetxt("psr-cs{0}.txt".format("%02d" % i), cs_stats,
+               fmt='%d %d %d %d %d %.4f %.4f %.4f %.4f', delimiter=" ", newline="\n",
+               header="Index, #Predicates, #Actions, #States, #Traces, TPR, TNR, FPR, FNR", footer="", comments="")
 
     action_sensor = sensor_for_action(plan[0])
     print "Action sensor: " + action_sensor
@@ -170,7 +170,7 @@ def gp_generate(domain_filename,i,problem_filename,samples,popSize,nGens, planne
                    tpr, tnr, fpr, fnr]
 
     # Saving files in the middle of the loop in case of process kills
-    print "Writing sats to ", "psr-as{0}.txt".format("%02d" % i)
+    print "Writing stats to ", "psr-as{0}.txt".format("%02d" % i)
     np.savetxt("psr-as{0}.txt".format("%02d" % i), as_stats,
                fmt='%d %d %d %d %d %.4f %.4f %.4f %.4f', delimiter=" ", newline="\n",
                header="Index, #Predicates, #Actions, #States, #Traces, TPR, TNR, FPR, FNR", footer="", comments="")
@@ -295,7 +295,7 @@ def main(argv):
                            tpr, tnr, fpr, fnr]
 
         # Saving files in the middle of the loop in case of process kills
-        print "Writing sats to psr-cs.txt"
+        print "Writing stats to psr-cs.txt"
         np.savetxt("psr-cs.txt", cs_stats,
                    fmt='%d %d %d %d %d %.4f %.4f %.4f %.4f', delimiter=" ", newline="\n",
                    header="Index, #Predicates, #Actions, #States, #Traces, TPR, TNR, FPR, FNR", footer="", comments="")
