@@ -99,8 +99,8 @@ def generate_all_traces(domain_file, planner = Propositional_Planner()):
 cache={}
 
 def evaluate_sensor_on_traces(traces,sensor):
-    if sensor in cache:
-            return cache[sensor]
+    if str(sensor) in cache:
+            return cache[str(sensor)]
     assert isinstance(sensor, Sensor)
     valid = []
     invalid = []
@@ -111,7 +111,7 @@ def evaluate_sensor_on_traces(traces,sensor):
             valid.append(t)
         else:
             invalid.append(t)
-    self.cache[sensor]=(valid,invalid)        
+    cache[str(sensor)]=(valid,invalid)        
     return (valid,invalid)
 
 # if __name__ == '__main__':
