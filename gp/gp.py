@@ -1,6 +1,5 @@
 from structures.domain import Domain, Action, State, Trace
-from structures.sensor import Sensor, Sensor_Parser
-import structures.sensor
+from structures.sensor import Sensor, Sensor_Parser, sensor_for_action
 from pddl.PDDL import PDDL_Parser
 from nodeGenerator import NodeGenerator
 from population import Population
