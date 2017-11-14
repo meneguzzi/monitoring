@@ -69,12 +69,12 @@ class Sensor():
         return isinstance(self.op, int)
 
     def is_model_of(self, trace, state):
-        global cache
-        if (str(self),trace,state) in cache:
-                return cache[(str(self),trace,state)]
-        cache[(str(self),trace,state)]=models(self,trace,state)
-        return cache[(str(self),trace,state)]
-        #return models(self, trace, state)
+        #global cache
+        #if (str(self),trace,state) in cache:
+        #        return cache[(str(self),trace,state)]
+        #cache[(str(self),trace,state)]=models(self,trace,state)
+        #return cache[(str(self),trace,state)]
+        return models(self, trace, state)
 
     def __getitem__(self, item):
         if item == 0:
@@ -128,24 +128,39 @@ true = Sensor(True)
 
 
 
-
+#sensor, trace,state
 def models(sigma, t, s):
     # assert isinstance(sigma, Sensor)
     # assert isinstance(t, structures.domain.Trace)
+    global cache
+    if (sigma,t,s) in cache:
+            print "hitc"
+            return cache[(sigma,t,s)]
+
     assert isinstance(s, structures.domain.State)
     if sigma.is_atom():
-        return sigma.lhs is True or sigma.lhs in s
+        cache[(sigma,t,s)]= sigma.lhs is True or sigma.lhs in s    
+        return cache[(sigma,t,s)]
+        #return sigma.lhs is True or sigma.lhs in s
     elif sigma.is_negated():
         #return sigma.lhs not in s
-        return not models(sigma.lhs, t, s)
+        cache[(sigma,t,s)]=not models(sigma.lhs,t,s)
+        return cache[(sigma,t,s)]
+        #return not models(sigma.lhs, t, s)
     else:
         if sigma.op == sigma.land:
-            return models(sigma.lhs, t, s) and models(sigma.rhs, t, s)
+            cache[(sigma,t,s)]=models(sigma.lhs, t, s) and models(sigma.rhs, t, s)
+            return cache[(sigma,t,s)]
+            #return models(sigma.lhs, t, s) and models(sigma.rhs, t, s)
         elif sigma.op == sigma.lor:
-            return models(sigma.lhs, t, s) or models(sigma.rhs, t, s)
+            cache[(sigma,t,s)]=models(sigma.lhs, t, s) or models(sigma.rhs, t, s)
+            return cache[(sigma,t,s)]
+            #return models(sigma.lhs, t, s) or models(sigma.rhs, t, s)
         elif sigma.is_path_formula():
             if sigma.op == 0 or len(t) == 0:
-                return models(sigma.lhs, t, s) and models(sigma.rhs, t, s)
+                cache[(sigma,t,s)]=models(sigma.lhs, t, s) and models(sigma.rhs, t, s)
+                return cache[(sigma,t,s)]
+                #return models(sigma.lhs, t, s) and models(sigma.rhs, t, s)
             else:
                 a = t[0]
                 assert isinstance(a, structures.domain.Action)
@@ -153,13 +168,20 @@ def models(sigma, t, s):
                 sp = a.result(s)
                 if models(sigma.lhs, t, s):
                     if not models(sigma.rhs, t, s):
-                        return models(Sensor(true, sigma.op - 1, sigma.rhs), tp, sp)
+                        #return models(Sensor(true, sigma.op - 1, sigma.rhs), tp, sp)
+                        cache[(sigma,t,s)]=models(Sensor(true, sigma.op - 1, sigma.rhs), tp, sp)
+                        return cache[(sigma,t,s)]
                     else:
+                        #cache[(sigma,t,s)]=True    
+                        #return cache[(sigma,t,s)]
                         return True
                 else:
-                    return models(sigma, tp, sp)
+                    cache[(sigma,t,s)]=models(sigma,tp,sp)    
+                    return cache[(sigma,t,s)]
+                    #return models(sigma, tp, sp)
         else:
             raise Exception
+        return cache[(sigma,t,s)]    
 
 
 class Sensor_Parser():
