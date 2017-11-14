@@ -257,7 +257,7 @@ class Sensor_Parser():
             # else:
             #     return Sensor(self.parse_symbol(t))
             return Sensor(self.parse_symbol(tokens))
-        elif (isinstance(tokens,str)):
+        elif isinstance(tokens,str):
             return Sensor(self.parse_symbol(tokens))
         elif len(tokens) == 2:  # This should be a negation
             op = tokens.pop(0)
@@ -269,7 +269,7 @@ class Sensor_Parser():
             rhs = tokens.pop(0)
             return Sensor(self.build_sensor(lhs),self.parse_op(op),self.build_sensor(rhs))
         else:
-            raise 'Expression ' + tokens + ' does not match a sensor'
+            raise 'Expression ' + str(tokens) + ' does not match a sensor'
 
     def parse_symbol(self,str):
         if str == "True":
