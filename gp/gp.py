@@ -188,9 +188,9 @@ def sensor_for_action(action):
 
     for i in range(0, len(action.negative_preconditions)):
         if i == len(action.negative_preconditions) - 1:
-            neg_precond = neg_precond.format("-"+str(action.negative_preconditions[i]))
+            neg_precond = neg_precond.format("(-"+str(action.negative_preconditions[i])+")")
         else:
-            neg_precond = "({0} ^ {1})".format(neg_precond.format("-"+str(action.negative_preconditions[i])),"{0}")
+            neg_precond = "({0} ^ {1})".format(neg_precond.format("(-"+str(action.negative_preconditions[i]))+")","{0}")
 
     precond = "({0} ^ {1})".format(pos_precond,neg_precond)
 
@@ -204,9 +204,9 @@ def sensor_for_action(action):
 
     for i in range(0, len(action.del_effects)):
         if i == len(action.del_effects) - 1:
-            neg_precond = neg_precond.format("-" + str(action.del_effects[i]))
+            neg_precond = neg_precond.format("(-" + str(action.del_effects[i])+")")
         else:
-            neg_precond = "({0} ^ {1})".format(neg_precond.format("-" + str(action.del_effects[i])), "{0}")
+            neg_precond = "({0} ^ {1})".format(neg_precond.format("(-" + str(action.del_effects[i]))+")", "{0}")
 
     effect = "({0} ^ {1})".format(pos_precond,neg_precond)
     return "({0} [1] {1})".format(precond,effect);
