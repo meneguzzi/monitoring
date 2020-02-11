@@ -61,7 +61,7 @@ class Propositional_Planner_Test(unittest.TestCase):
                          ]
                          )
 
-    @unittest.skipUnless(sys.platform.startswith("osx"), "Skip, since travis does not like z3")
+    #@unittest.skipUnless(sys.platform.startswith("osx"), "Skip, since travis does not like z3")
     def test_solve_sat(self):
         planner = SAT_Planner()
         plan = planner.solve_file('examples/dinner/dinner.pddl', 'examples/dinner/pb1.pddl')

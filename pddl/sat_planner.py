@@ -23,7 +23,7 @@ class SAT_Planner(PDDL_Planner):
             self.props.clear()
             self.action_map.clear()
             self.encode_formula(s, domain, initial_state, goal_state, length)
-            # print s.to_smt2()
+            print s.to_smt2()
             # print s
             if s.check() == sat:
                 if self.verbose: print "Model found with length {0}".format(length)
@@ -122,8 +122,9 @@ class SAT_Planner(PDDL_Planner):
                 cons = []
                 for a in del_eff_actions:
                     cons.append(self.action_prop_at(a, i))
-                cons = Or(*cons)
-                frame_axioms.append(Implies(ant, cons))
+                if cons:
+                    cons = Or(*cons)
+                    frame_axioms.append(Implies(ant, cons))
 
         s.add(s0_formula)
         s.add(goal_formula)
