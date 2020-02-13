@@ -16,7 +16,7 @@ before_install:
 #  - sudo rm /etc/apt/sources.list.d/mongodb.list
   # - sudo apt-get -qq update
   # - sudo apt-get -q update
-  # - sudo apt-get install -y z3
+  - sudo apt-get install -y z3
   # - sudo apt-get install -y python-z3
 # command to install dependencies
 install:
