@@ -68,12 +68,12 @@ class Propositional_Planner_Test(unittest.TestCase):
         self.assertIsNotNone(plan)
         self.assertEqual(3,len(plan))
         # print plan
-        self.assertEqual(plan,
-            [ Action('wrap', [], [('quiet',)],[],[('present',)],[]),
-              Action('dolly', [], [('garbage',)],[],[],[('garbage',), ('quiet',)]),
-              Action('cook', [], [('clean',)],[],[('dinner',)],[])]
-
-        )
+        self.assertEqual(
+                    [Action('wrap', [], [('quiet',)],[],[('present',)],[]),
+                        Action('cook', [], [('clean',)],[],[('dinner',)],[]),
+                        Action('dolly', [], [('garbage',)], [], [], [('garbage',), ('quiet',)])],
+                    plan
+                )
 
     def test_benchmark_planners(self):
         pass
