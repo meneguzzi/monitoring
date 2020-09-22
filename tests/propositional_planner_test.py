@@ -61,19 +61,19 @@ class Propositional_Planner_Test(unittest.TestCase):
                          ]
                          )
 
-    #@unittest.skipUnless(sys.platform.startswith("osx"), "Skip, since travis does not like z3")
+    @unittest.skipUnless(sys.platform.startswith("osx"), "Skip, since travis does not like z3")
     def test_solve_sat(self):
         planner = SAT_Planner()
         plan = planner.solve_file('examples/dinner/dinner.pddl', 'examples/dinner/pb1.pddl')
         self.assertIsNotNone(plan)
         self.assertEqual(3,len(plan))
         # print plan
-        self.assertEqual(
-                    [Action('wrap', [], [('quiet',)],[],[('present',)],[]),
-                        Action('cook', [], [('clean',)],[],[('dinner',)],[]),
-                        Action('dolly', [], [('garbage',)], [], [], [('garbage',), ('quiet',)])],
-                    plan
-                )
+        self.assertEqual(plan,
+            [ Action('wrap', [], [('quiet',)],[],[('present',)],[]),
+              Action('dolly', [], [('garbage',)],[],[],[('garbage',), ('quiet',)]),
+              Action('cook', [], [('clean',)],[],[('dinner',)],[])]
+
+        )
 
     def test_benchmark_planners(self):
         pass

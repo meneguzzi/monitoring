@@ -1,19 +1,15 @@
 #!/usr/bin/env bash
 
-git pull
-
 export PYTHONPATH=.
 
-~/slackMessage.sh -m "Started monitoring simulation at `hostname`"
+echo "### Started monitoring simulation ###"
 
 STARTTIME=$(date +%s)
 
-(python gp/gp.py 1 ; python gp/gp.py 2) &
-(python gp/gp.py 3 ; python gp/gp.py 4) &
-(python gp/gp.py 5 ; python gp/gp.py 6) &
-(python gp/gp.py 7 ; python gp/gp.py 8) &
-(python gp/gp.py 9 ; python gp/gp.py 10)
+(python2.7 gp/gp.py barter-world 1 ; python2.7 gp/gp.py barter-world 2) &
+(python2.7 gp/gp.py barter-world 3 ; python2.7 gp/gp.py barter-world 4) &
+(python2.7 gp/gp.py barter-world 5)
 
 ENDTIME=$(date +%s)
 
-~/slackMessage.sh -m "Finished monitoring simulation in $(( ($ENDTIME - $STARTTIME)/60 )) minutes"
+echo "Finished monitoring simulation in $(( ($ENDTIME - $STARTTIME)/60 )) minutes"

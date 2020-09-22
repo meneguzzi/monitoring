@@ -8,6 +8,7 @@ import monitoring.monitor
 from monitoring.monitor import MonitorSynthesizer
 from pddl.propositional_planner import Propositional_Planner
 import numpy as np
+import gc
 
 class GP(object):
     def __init__(self,verbose=True):
@@ -91,7 +92,7 @@ class GP(object):
         return (tpr,tnr,fpr,fnr)
 
 
-def gp_generate(domain_filename,i,problem_filename,samples,popSize,nGens, planner_time_limit=0.0, max_length=0, sensor_depth=1):
+def gp_generate(domain_filename, domain_name, i, problem_filename, samples, popSize, nGens, planner_time_limit=0.0, max_length=0, sensor_depth=1):
     ss_stats = np.zeros((1, 9))  # Stats for the simple sensor
     cs_stats = np.zeros((1, 9))  # Stats for the complex sensor
     as_stats = np.zeros((1, 9))  # Stats for the action sensor
@@ -109,6 +110,8 @@ def gp_generate(domain_filename,i,problem_filename,samples,popSize,nGens, planne
         # traces.append(monitoring.monitor.sample_trace_from_file(domain_filename,
         #                                               planner=Propositional_Planner(time_limit=planner_time_limit,
         #                                                                             max_length=max_length)))
+	gc.collect()
+
     print "Generated {0} valid traces from a sample of {1}".format(len(traces), samples)
 
     simple_sensor = "({0} v {1})".format(pp.initial_state[1], pp.positive_goals[-1]).replace(",", "").replace("\'", "")
@@ -125,8 +128,8 @@ def gp_generate(domain_filename,i,problem_filename,samples,popSize,nGens, planne
                        tpr, tnr, fpr, fnr]
 
     # Saving files in the middle of the loop in case of process kills
-    print "Writing stats to ","psr-ss{0}.txt".format("%02d" % i)
-    np.savetxt("psr-ss{0}.txt".format("%02d" % i), ss_stats,
+    print "Writing stats to ", domain_name + "-ss{0}.txt".format("%02d" % i)
+    np.savetxt(domain_name + "-ss{0}.txt".format("%02d" % i), ss_stats,
                fmt='%d %d %d %d %d %.4f %.4f %.4f %.4f', delimiter=" ", newline="\n",
                header="Index, #Predicates, #Actions, #States, #Traces, TPR, TNR, FPR, FNR", footer="", comments="")
 
@@ -151,8 +154,8 @@ def gp_generate(domain_filename,i,problem_filename,samples,popSize,nGens, planne
                        tpr, tnr, fpr, fnr]
 
     # Saving files in the middle of the loop in case of process kills
-    print "Writing stats to ","psr-cs{0}.txt".format("%02d" % i)
-    np.savetxt("psr-cs{0}.txt".format("%02d" % i), cs_stats,
+    print "Writing stats to ", domain_name + "-cs{0}.txt".format("%02d" % i)
+    np.savetxt(domain_name + "-cs{0}.txt".format("%02d" % i), cs_stats,
                fmt='%d %d %d %d %d %.4f %.4f %.4f %.4f', delimiter=" ", newline="\n",
                header="Index, #Predicates, #Actions, #States, #Traces, TPR, TNR, FPR, FNR", footer="", comments="")
 
@@ -170,29 +173,27 @@ def gp_generate(domain_filename,i,problem_filename,samples,popSize,nGens, planne
                    tpr, tnr, fpr, fnr]
 
     # Saving files in the middle of the loop in case of process kills
-    print "Writing stats to ", "psr-as{0}.txt".format("%02d" % i)
-    np.savetxt("psr-as{0}.txt".format("%02d" % i), as_stats,
+    print "Writing stats to ", domain_name + "-as{0}.txt".format("%02d" % i)
+    np.savetxt(domain_name + "-as{0}.txt".format("%02d" % i), as_stats,
                fmt='%d %d %d %d %d %.4f %.4f %.4f %.4f', delimiter=" ", newline="\n",
                header="Index, #Predicates, #Actions, #States, #Traces, TPR, TNR, FPR, FNR", footer="", comments="")
 
-def main(argv):
-    # gp = GP()
-    # gp.build_sensor_for_domain('examples/psr-small/domain01.pddl',"((NOT-UPDATED-CB1) v (UPDATED-CB1))",1000)
-    domain_template = 'examples/psr-small/domain{0}.pddl'
-    problem_template = 'examples/psr-small/task{0}.pddl'
+def main(argv):    
     experiments = 20
-    samples = 200
+    samples = 1000
     popSize = 100
     nGens = 100
     planner_time_limit = 0.02
     max_length = 10
     sensor_depth = 3
 
+    domain_name = ''
     if len(argv) > 1:
-        i = int(argv[1])
-        domain_filename = 'examples/psr-small/domain{0}.pddl'.format("%02d" % i)
-        problem_filename = 'examples/psr-small/task{0}.pddl'.format("%02d" % i)
-        gp_generate(domain_filename, i, problem_filename, samples, popSize, nGens, planner_time_limit, max_length, sensor_depth)
+        domain_name = str(argv[1])
+        i = int(argv[2])
+        domain_filename = 'examples/' + domain_name + '/domain-' + str(i) + '.pddl'
+        problem_filename = 'examples/' + domain_name + '/task-' + str(i) + '.pddl'
+        gp_generate(domain_filename, domain_name, i, problem_filename, samples, popSize, nGens, planner_time_limit, max_length, sensor_depth)
         exit(0)
 
     # ipreds,iactions,istate_space,traces, itpr,itnr,ifpr,ifnr = 1, 2, 3, 4, 5, 6, 7, 8
@@ -204,8 +205,8 @@ def main(argv):
 
     for i in range(1, experiments + 1):
         if i in skip: print "Skipping {0}".format(i); continue  # Skipping overlong domains
-        domain_filename = 'examples/psr-small/domain{0}.pddl'.format("%02d" % i)
-        problem_filename = 'examples/psr-small/task{0}.pddl'.format("%02d" % i)
+        domain_filename = 'examples/' + domain_name + '/domain-' + str(i) + '.pddl'
+        problem_filename = 'examples/' + domain_name + '/task-' + str(i) + '.pddl'
         pp = PDDL_Parser()
         pp.parse_domain(domain_filename)
         pp.parse_problem(problem_filename)
@@ -234,8 +235,8 @@ def main(argv):
                            tpr, tnr, fpr, fnr]
 
         # Saving files in the middle of the loop in case of process kills
-        print "Writing stats to psr-ss.txt"
-        np.savetxt("psr-ss.txt", ss_stats,
+        print "Writing stats to " + domain_name + "-ss.txt"
+        np.savetxt(domain_name + "-ss.txt", ss_stats,
                    fmt='%d %d %d %d %d %.4f %.4f %.4f %.4f', delimiter=" ", newline="\n",
                    header="Index, #Predicates, #Actions, #States, #Traces, TPR, TNR, FPR, FNR", footer="", comments="")
 
@@ -259,18 +260,12 @@ def main(argv):
                            tpr, tnr, fpr, fnr]
 
         # Saving files in the middle of the loop in case of process kills
-        print "Writing stats to psr-cs.txt"
-        np.savetxt("psr-cs.txt", cs_stats,
+        print "Writing stats to " + domain_name + "-cs.txt"
+        np.savetxt(domain_name + "-cs.txt", cs_stats,
                    fmt='%d %d %d %d %d %.4f %.4f %.4f %.4f', delimiter=" ", newline="\n",
                    header="Index, #Predicates, #Actions, #States, #Traces, TPR, TNR, FPR, FNR", footer="", comments="")
 
 if __name__ == '__main__':
     import sys
     main(sys.argv)
-
-
-
-
-
-
 
