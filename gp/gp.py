@@ -40,6 +40,7 @@ class GP(object):
         for i in range(0, 15):
             terms.append(Sensor.generate_sensor(domain, sensorDepth))
         print terms
+
         ng = NodeGenerator(terms, 1, 5, 2, 5)
 
         sp = Sensor_Parser()
@@ -67,6 +68,7 @@ class GP(object):
             if v > m:
                 m = v
                 p = k
+
         d = self.ms.evaluate_sensor_on_traces(traces, sp.parse_sensor(modelSensor))
         a = self.ms.evaluate_sensor_on_traces(traces, p.compile())
 
@@ -178,9 +180,9 @@ def gp_generate(domain_filename, domain_name, i, problem_filename, samples, popS
                fmt='%d %d %d %d %d %.4f %.4f %.4f %.4f', delimiter=" ", newline="\n",
                header="Index, #Predicates, #Actions, #States, #Traces, TPR, TNR, FPR, FNR", footer="", comments="")
 
-def main(argv):    
+def main(argv): 
     experiments = 20
-    samples = 1000
+    samples = 200
     popSize = 100
     nGens = 100
     planner_time_limit = 0.02
