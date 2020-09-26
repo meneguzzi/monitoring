@@ -234,7 +234,9 @@ class Agent:
         # Close and finish
         self.env.close()
 
+        return state
+
 
 if __name__ == "__main__":
     agent = Agent()
-    agent.train()
+    agent.train(env=env)
