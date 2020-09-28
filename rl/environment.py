@@ -2,9 +2,6 @@ import numpy as np
 from copy import copy
 from node import Node
 from structures.sensor import * 
-from pprint import pprint
-import random
-import time
 
 class Environment():
     
@@ -28,9 +25,6 @@ class Environment():
         # Q-net stuff
         self.num_actions = len(self.operators) + len(self.paths) + len(self.terms)
         self.num_features = self.num_actions + 1
-
-        print 'num_actions '+ str(self.num_actions)
-        print 'num_features '+ str(self.num_features)
 
 
     def step(self, action):
@@ -81,11 +75,6 @@ class Environment():
             reward = -1
         else:
             reward = self.compute_reward(self.root_node)
-            print 'DONE ' + str(reward) + '\n\n'
-            self.reset()
-        
-        print(self.state.tolist())
-        time.sleep(0.2)
 
         return self.state, reward, done
     
@@ -146,7 +135,6 @@ class Environment():
         fn=set(actual[1]) & set(self.desired[0])
         shouldBeFitness=(len(tp)+len(tn)-len(fp)-len(fn))
         fitness = shouldBeFitness if shouldBeFitness>0 else 0
-        # print p.compile()
         return fitness
 
 
@@ -167,4 +155,4 @@ class Environment():
 
 
 if __name__ == "__main__":
-    print("bla")
+    pass
