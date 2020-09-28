@@ -53,11 +53,11 @@ class Agent:
     def __init__(self, env=None, output_path=None, tag=None):
         # Hyperparameters
         self.gamma = 0.99
-        self.alpha = 0.001
+        self.alpha = 0.0005
 
         # Training
         self.num_episodes = 100000  # 100k
-        self.memory_size = 512
+        self.memory_size = 1024
         self.memory = ReplayMemory(self.memory_size)
         self.batch_size = 256
 
