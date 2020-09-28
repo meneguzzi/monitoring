@@ -182,7 +182,7 @@ def gp_generate(domain_filename, domain_name, i, problem_filename, samples, popS
 
 def main(argv): 
     experiments = 20
-    samples = 200
+    samples = 1000
     popSize = 100
     nGens = 100
     planner_time_limit = 0.02

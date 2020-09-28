@@ -133,7 +133,7 @@ def rl_generate(domain_filename, domain_name, i, problem_filename, samples, plan
 
 
 def main(argv): 
-    samples = 200
+    samples = 1000
     planner_time_limit = 0.02
     max_length = 10
     sensor_depth = 3
