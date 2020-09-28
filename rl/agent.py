@@ -50,17 +50,16 @@ class QNet(nn.Module):
 
 
 class Agent:
-    def __init__(self, env=Environment(), output_path=None, tag=None):
+    def __init__(self, env=None, output_path=None, tag=None):
         # Hyperparameters
         self.gamma = 0.99
-        self.alpha = 0.00001
+        self.alpha = 0.001
 
         # Training
-        self.num_steps = 100000  # 100k
-        self.memory_size = 50000
+        self.num_episodes = 100000  # 100k
+        self.memory_size = 512
         self.memory = ReplayMemory(self.memory_size)
-        self.target_update_interval = 128
-        self.batch_size = 512
+        self.batch_size = 256
 
         # Epsilon
         self.epsilon = 1
@@ -69,13 +68,11 @@ class Agent:
 
         # Log
         if output_path == None:
-            path = os.path.join('rl/output', '{}_{}_{}_{}_{}_{}_{}_{}_{}_{}'.format(
+            path = os.path.join('rl/output', '{}_{}_{}_{}_{}_{}_{}_{}'.format(
                 str(time.time()), 
                 self.alpha, 
                 self.gamma, 
-                self.num_steps, 
                 self.memory_size, 
-                self.target_update_interval, 
                 self.batch_size, 
                 self.epsilon_min, 
                 self.epsilon_decay, 
@@ -160,7 +157,7 @@ class Agent:
         # Start training
         print("Started training...")
         start = time.time()
-        for step in range(self.num_steps):
+        for episode in range(self.num_episodes):
 
             # Choose action
             action = self.choose_action(state)
@@ -186,15 +183,14 @@ class Agent:
                 batch_loss += self.learn()
 
             # Save interval
-            if (step != 0 and step % self.target_update_interval == 0):
-
+            if done:
                 # Update step time
                 end = time.time()
                 elapsed = end - start
                 start = time.time()
 
                 # Print stats
-                print("interval: %2d \t acc_reward: %10.3f \t batch_loss: %8.8f \t elapsed: %6.2f \t epsilon: %2.4f" % (episode_num, episode_reward, batch_loss, float(elapsed), self.epsilon))
+                print("episode: %2d \t acc_reward: %10.3f \t batch_loss: %8.8f \t elapsed: %6.2f \t epsilon: %2.4f" % (episode_num, episode_reward, batch_loss, float(elapsed), self.epsilon))
                 
                 # Save logs
                 log = "%2d\t%8.3f\t%8.8f\t%.2f\t%.4f\n" % (episode_num, episode_reward, batch_loss, elapsed, self.epsilon)
@@ -230,6 +226,9 @@ class Agent:
 
                 # Save model checkpoint
                 self.save_model()
+
+                # Reset environment
+                state = self.env.reset()
             
         # Close and finish
         self.env.close()

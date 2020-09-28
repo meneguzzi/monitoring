@@ -6,7 +6,7 @@ import monitoring.monitor
 from monitoring.monitor import MonitorSynthesizer
 from pddl.propositional_planner import Propositional_Planner
 from environment import Environment
-# from agent import Agent
+from agent import Agent
 import random
 import numpy as np
 
@@ -21,14 +21,8 @@ class RL(object):
         sp = Sensor_Parser()
 
         env = Environment(ng, sp.parse_sensor(modelSensor), traces, self.ms)
-        env.reset()
-        done = False
-        while not done:
-            env.step(random.randrange(env.num_actions))
-        exit(0)
-
-        # agent = Agent(env=env)
-        # p = agent.train()
+        agent = Agent(env=env)
+        p = agent.train()
 
         d = self.ms.evaluate_sensor_on_traces(traces, sp.parse_sensor(modelSensor))
         a = self.ms.evaluate_sensor_on_traces(traces, p.compile())
