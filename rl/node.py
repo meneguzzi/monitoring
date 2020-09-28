@@ -6,7 +6,7 @@ class Node:
         self.parent=parent
         self.contents=contents
         self.arity=arity
-        self.children=[-1,-1,-1]
+        self.children=[-1]*arity
         self.compiled=False
 
     

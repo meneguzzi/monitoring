@@ -14,7 +14,7 @@ class NodeGenerator:
 
     def growNone(self, parent, curDepth):
         n = Node(parent, None, 1)
-        # n.setChild(0, self.addNode(n, curDepth))
+        n.setChild(0, self.addNode(n, curDepth))
         return n
 
     def growSnot(self, parent, curDepth):
