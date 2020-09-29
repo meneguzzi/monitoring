@@ -56,27 +56,27 @@ class Agent:
         self.alpha = 0.0005
 
         # Training
-        self.num_episodes = 100000  # 100k
+        self.num_episodes = 10000  # 10k
         self.memory_size = 1024
         self.memory = ReplayMemory(self.memory_size)
         self.batch_size = 256
 
         # Epsilon
         self.epsilon = 1
-        self.epsilon_min = 0.01  # 1%
+        self.epsilon_min = 0.0  # 0%
         self.epsilon_decay = 0.01  # 1%
 
         # Log
         if output_path == None:
             path = os.path.join('rl/output', '{}_{}_{}_{}_{}_{}_{}_{}'.format(
+                str(tag),
                 str(time.time()), 
                 self.alpha, 
                 self.gamma, 
                 self.memory_size, 
                 self.batch_size, 
                 self.epsilon_min, 
-                self.epsilon_decay, 
-                str(tag))
+                self.epsilon_decay)
             )
         else:
             path = os.path.join('rl/output', output_path)
@@ -124,7 +124,7 @@ class Agent:
 
         q_values = self.qnet(s0).gather(1,a)
         max_q_values = self.qnet_target(s1).max(1)[0].unsqueeze(1)
-        q_targets = r + self.gamma * max_q_values
+        q_targets = r + self.gamma * max_q_values * done
 
         loss = (q_values - q_targets).pow(2).mean()
 
@@ -146,9 +146,9 @@ class Agent:
         episode_num = 0
 
         # Start plot
-        plt.ion()
-        plt.show()
-        plt.pause(0.001)
+        # plt.ion()
+        # plt.show()
+        # plt.pause(0.001)
 
         # Reset environment
         state = self.env.reset()
@@ -213,9 +213,9 @@ class Agent:
                 batch_loss = 0
 
                 # Plot
-                plt.plot(episode_rewards)
-                plt.draw()
-                plt.pause(0.001)
+                # plt.plot(episode_rewards)
+                # plt.draw()
+                # plt.pause(0.001)
 
                 # Epsilon decay
                 if len(self.memory) > self.batch_size: self.epsilon -= self.epsilon * self.epsilon_decay
@@ -228,12 +228,10 @@ class Agent:
                 self.save_model()
 
                 # Reset environment
-                state = self.env.reset()
-            
-        # Close and finish
-        self.env.close()
-
-        return state
+                if episode+1 == self.num_episodes:
+                    return state
+                else:
+                    state = self.env.reset()
 
 
 if __name__ == "__main__":
