@@ -54,9 +54,6 @@ def main():
             print("Dumping terms to file {0}".format(terms_file))
             with open(terms_file, 'w+') as f: pickle.dump(terms, f)
 
-            break
-        break
-
 
 
 if __name__ == '__main__':
