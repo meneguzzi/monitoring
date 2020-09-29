@@ -10,36 +10,21 @@ from pddl.propositional_planner import Propositional_Planner
 import numpy as np
 import pickle
 
+
 class GP(object):
     def __init__(self,verbose=True):
         self.verbose = verbose
         self.state_space = []
         self.ms = MonitorSynthesizer()
 
-    def build_sensor_for_domain(self, pddl, model_sensor, samples, popSize=100, nGens=100):
-        parser = PDDL_Parser()
-        parser.parse_domain(pddl)
-        domain = parser.domain.groundify()
 
-        traces = []
-        if samples > 0:
-            print "Sampling {0} traces for domain {1}".format(samples, pddl)
-            traces = monitoring.monitor.sample_traces(pddl, samples)
-            print "Generated {0} valid traces from a sample of {1}".format(len(traces), samples)
-        else:
-            print "Generating all traces for domain {0}".format(pddl)
-            traces = monitoring.monitor.generate_all_traces(pddl)
-            print "Generated {0} traces".format(len(traces))
-
-        return self.build_sensor(domain, model_sensor, traces, popSize, nGens)
-
-    def build_sensor(self, domain, modelSensor, traces, terms, popSize=100, nGens=100, 
+    def build_sensor(self, domain, domain_name, instance, modelSensor, traces, terms, popSize=100, nGens=100, 
                     reproducePercent=0.8,mutatePercent=0.05,crossOverPercent=0.1, sensorDepth=1):
         ng = NodeGenerator(terms, 1, 5, 2, 5)
         gpo = GPOps(terms, 1, 5, 1, 4)
         sp = Sensor_Parser()
 
-        pop = Population(popSize, ng, reproducePercent, mutatePercent, crossOverPercent, gpo, sp.parse_sensor(modelSensor), traces, self.ms)
+        pop = Population(domain_name, instance, popSize, ng, reproducePercent, mutatePercent, crossOverPercent, gpo, sp.parse_sensor(modelSensor), traces, self.ms)
 
         for i in range(0, nGens):
             if self.verbose: print "g", i
@@ -80,6 +65,7 @@ class GP(object):
 
         return (tpr,tnr,fpr,fnr)
 
+
 def gp_generate(domain_filename, domain_name, instance, problem_filename, traces, terms, popSize, nGens, sensor_depth=1):
     ss_stats = np.zeros((1, 9))  # Stats for the simple sensor
     cs_stats = np.zeros((1, 9))  # Stats for the complex sensor
@@ -95,9 +81,9 @@ def gp_generate(domain_filename, domain_name, instance, problem_filename, traces
     print "Simple sensor: " + simple_sensor
     gp = GP(True)
     tpr, tnr, fpr, fnr = 0, 0, 0, 0
-    tpr, tnr, fpr, fnr = gp.build_sensor(pp.domain, simple_sensor, traces, terms, popSize, nGens, sensorDepth=sensor_depth)
+    tpr, tnr, fpr, fnr = gp.build_sensor(pp.domain, domain_name, instance, simple_sensor, traces, terms, popSize, nGens, sensorDepth=sensor_depth)
 
-    ss_stats[0] = [i,
+    ss_stats[0] = [instance,
                        len(pp.domain.all_facts),
                        len(pp.domain.actions),
                        len(pp.domain.state_space),
@@ -105,8 +91,8 @@ def gp_generate(domain_filename, domain_name, instance, problem_filename, traces
                        tpr, tnr, fpr, fnr]
 
     # Saving files in the middle of the loop in case of process kills
-    print "Writing stats to ", domain_name + "-ss{0}.txt".format("%02d" % i)
-    np.savetxt(domain_name + "-ss{0}.txt".format("%02d" % i), ss_stats,
+    print "Writing stats to ", domain_name + "-ss{0}.txt".format("%02d" % instance)
+    np.savetxt(domain_name + "-ss{0}.txt".format("%02d" % instance), ss_stats,
                fmt='%d %d %d %d %d %.4f %.4f %.4f %.4f', delimiter=" ", newline="\n",
                header="Index, #Predicates, #Actions, #States, #Traces, TPR, TNR, FPR, FNR", footer="", comments="")
 
@@ -121,9 +107,9 @@ def gp_generate(domain_filename, domain_name, instance, problem_filename, traces
     print "Complex sensor: " + complex_sensor
     gp = GP(True)
     tpr, tnr, fpr, fnr = 0, 0, 0, 0
-    tpr, tnr, fpr, fnr = gp.build_sensor(pp.domain, complex_sensor, traces, popSize, nGens, sensorDepth=sensor_depth)
+    tpr, tnr, fpr, fnr = gp.build_sensor(pp.domain, domain_name, instance, complex_sensor, traces, terms, popSize, nGens, sensorDepth=sensor_depth)
 
-    cs_stats[0] = [i,
+    cs_stats[0] = [instance,
                        len(pp.domain.all_facts),
                        len(pp.domain.actions),
                        len(pp.domain.state_space),
@@ -131,8 +117,8 @@ def gp_generate(domain_filename, domain_name, instance, problem_filename, traces
                        tpr, tnr, fpr, fnr]
 
     # Saving files in the middle of the loop in case of process kills
-    print "Writing stats to ", domain_name + "-cs{0}.txt".format("%02d" % i)
-    np.savetxt(domain_name + "-cs{0}.txt".format("%02d" % i), cs_stats,
+    print "Writing stats to ", domain_name + "-cs{0}.txt".format("%02d" % instance)
+    np.savetxt(domain_name + "-cs{0}.txt".format("%02d" % instance), cs_stats,
                fmt='%d %d %d %d %d %.4f %.4f %.4f %.4f', delimiter=" ", newline="\n",
                header="Index, #Predicates, #Actions, #States, #Traces, TPR, TNR, FPR, FNR", footer="", comments="")
 
@@ -140,9 +126,9 @@ def gp_generate(domain_filename, domain_name, instance, problem_filename, traces
     print "Action sensor: " + action_sensor
     gp = GP(True)
     tpr, tnr, fpr, fnr = 0, 0, 0, 0
-    tpr, tnr, fpr, fnr = gp.build_sensor(pp.domain, action_sensor, traces, popSize, nGens, sensorDepth=sensor_depth)
+    tpr, tnr, fpr, fnr = gp.build_sensor(pp.domain, domain_name, instance, action_sensor, traces, terms, popSize, nGens, sensorDepth=sensor_depth)
 
-    as_stats[0] = [i,
+    as_stats[0] = [instance,
                    len(pp.domain.all_facts),
                    len(pp.domain.actions),
                    len(pp.domain.state_space),
@@ -150,8 +136,8 @@ def gp_generate(domain_filename, domain_name, instance, problem_filename, traces
                    tpr, tnr, fpr, fnr]
 
     # Saving files in the middle of the loop in case of process kills
-    print "Writing stats to ", domain_name + "-as{0}.txt".format("%02d" % i)
-    np.savetxt(domain_name + "-as{0}.txt".format("%02d" % i), as_stats,
+    print "Writing stats to ", domain_name + "-as{0}.txt".format("%02d" % instance)
+    np.savetxt(domain_name + "-as{0}.txt".format("%02d" % instance), as_stats,
                fmt='%d %d %d %d %d %.4f %.4f %.4f %.4f', delimiter=" ", newline="\n",
                header="Index, #Predicates, #Actions, #States, #Traces, TPR, TNR, FPR, FNR", footer="", comments="")
 
@@ -185,8 +171,6 @@ def main(argv):
         exit(1)
 
 
-
 if __name__ == '__main__':
     import sys
     main(sys.argv)
-
