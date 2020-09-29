@@ -2,10 +2,12 @@ import numpy as np
 from copy import copy
 from node import Node
 from structures.sensor import * 
+import os
+import pickle
 
 class Environment():
     
-    def __init__(self, ng, modelSensor, traces, ms):
+    def __init__(self, domain_name, instance, ng, modelSensor, traces, ms):
         # Nir's stuff
         self.traces = traces
         self.modelSensor = modelSensor
@@ -25,6 +27,12 @@ class Environment():
         # Q-net stuff
         self.num_actions = len(self.operators) + len(self.paths) + len(self.terms)
         self.num_features = self.num_actions + 1
+
+        # History
+        self.history = []
+        self.history_filename = 'rl/output/'+str(domain_name)+'-'+str(instance)+'.pkl'
+        if not os.path.exists('rl/output/'):
+            os.makedirs('rl/output')
 
 
     def step(self, action):
@@ -135,6 +143,15 @@ class Environment():
         fn=set(actual[1]) & set(self.desired[0])
         shouldBeFitness=(len(tp)+len(tn)-len(fp)-len(fn))
         fitness = shouldBeFitness if shouldBeFitness>0 else 0
+
+        # Save to history
+        self.history.append((fitness, p.compile()))
+
+        # Write current history to file
+        print 'Writing history to file...'
+        with open(self.history_filename, 'w+') as f:
+            pickle.dump(self.history, f)
+
         return fitness
 
 

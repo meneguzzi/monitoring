@@ -3,11 +3,13 @@ from nodeGenerator import NodeGenerator
 import gpOps
 import functools
 from monitoring.monitor import evaluate_sensor_on_traces, MonitorSynthesizer
+import os
+import pickle
 
 
 class Population:
   """ng is the initial population generator"""
-  def __init__(self,num,ng,reproducePercent,mutatePercent,crossOverPercent,gpOps,modelSensor,traces, mp=MonitorSynthesizer()):
+  def __init__(self,domain_name,instance,num,ng,reproducePercent,mutatePercent,crossOverPercent,gpOps,modelSensor,traces, mp=MonitorSynthesizer()):
     self.num=num
     self.ng=ng
     self.pop=[]
@@ -21,8 +23,14 @@ class Population:
     self.traces=traces
     self.gpOps=gpOps
     self.mp = mp
+    
+    # History
+    self.history = []
+    self.history_filename = 'gp/output/'+str(domain_name)+'-'+str(instance)+'.pkl'
+    if not os.path.exists('gp/output/'):
+        os.makedirs('gp/output')
 
-     
+
   def iterate(self):
     fitness={}
     desired=self.mp.evaluate_sensor_on_traces(self.traces,self.modelSensor)
@@ -38,6 +46,15 @@ class Population:
 
         shouldBeFitness=(len(tp)+len(tn)-len(fp)-len(fn))
         fitness[p]= shouldBeFitness if shouldBeFitness>0 else 0
+
+        # Save to history
+        self.history.append((fitness[p], p.compile()))
+
+    # Write current history to file
+    print 'Writing history to file...'
+    with open(self.history_filename, 'w+') as f:
+        pickle.dump(self.history, f)
+
     return fitness
 
   def pickIndividual(self,fitness):
