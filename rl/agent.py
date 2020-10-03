@@ -190,7 +190,7 @@ class Agent:
                 start = time.time()
 
                 # Print stats
-                print("episode: %2d \t acc_reward: %10.3f \t batch_loss: %8.8f \t elapsed: %6.2f \t epsilon: %2.4f" % (episode_num, episode_reward, batch_loss, float(elapsed), self.epsilon))
+                #print("episode: %2d \t acc_reward: %10.3f \t batch_loss: %8.8f \t elapsed: %6.2f \t epsilon: %2.4f" % (episode_num, episode_reward, batch_loss, float(elapsed), self.epsilon))
                 
                 # Save logs
                 log = "%2d\t%8.3f\t%8.8f\t%.2f\t%.4f\n" % (episode_num, episode_reward, batch_loss, elapsed, self.epsilon)
@@ -229,7 +229,7 @@ class Agent:
 
                 # Reset environment
                 if episode+1 == self.num_episodes:
-                    return state
+                    return self.env.get_last_state()
                 else:
                     state = self.env.reset()
 

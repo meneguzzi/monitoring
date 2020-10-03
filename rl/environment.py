@@ -148,15 +148,18 @@ class Environment():
         self.history.append((fitness, p.compile()))
 
         # Write current history to file
-        print 'Writing history to file...'
+        #print 'Writing history to file...'
         with open(self.history_filename, 'w+') as f:
             pickle.dump(self.history, f)
+
+        self.last_state = p
 
         return fitness
 
 
-    def get_state(self):
-        return 'bla'
+    def get_last_state(self):
+        return self.last_state
+
 
     def reset(self):
         self.curr_depth = 1
