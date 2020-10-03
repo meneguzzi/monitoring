@@ -9,7 +9,7 @@ import pickle
 
 class Population:
   """ng is the initial population generator"""
-  def __init__(self,domain_name,instance,num,ng,reproducePercent,mutatePercent,crossOverPercent,gpOps,modelSensor,traces, mp=MonitorSynthesizer()):
+  def __init__(self,domain_name,instance,num,ng,reproducePercent,mutatePercent,crossOverPercent,gpOps,modelSensor,traces, mp=MonitorSynthesizer(), tag):
     self.num=num
     self.ng=ng
     self.pop=[]
@@ -26,7 +26,7 @@ class Population:
     
     # History
     self.history = []
-    self.history_filename = 'gp/output/'+str(domain_name)+'-'+str(instance)+'.pkl'
+    self.history_filename = 'gp/output/' + str(domain_name) + '-' + str(tag) + '{0}'.format("%02d" % instance) + '-history.pkl'
     if not os.path.exists('gp/output/'):
         os.makedirs('gp/output')
 

@@ -15,13 +15,15 @@ class RL(object):
     def __init__(self):
         self.ms = MonitorSynthesizer()
 
-    def build_sensor(self, domain, domain_name, instance, modelSensor, traces, terms, sensorDepth=1):
+    def build_sensor(self, domain, domain_name, instance, modelSensor, traces, terms, sensorDepth=1, tag=None):
         ng = NodeGenerator(terms, 1, 5, 2, 5)
         sp = Sensor_Parser()
 
-        env = Environment(domain_name, instance, ng, sp.parse_sensor(modelSensor), traces, self.ms)
-        agent = Agent(env=env, tag=str(domain_name)+'-'+str(instance))
+        env = Environment(domain_name, instance, tag, ng, sp.parse_sensor(modelSensor), traces, self.ms)
+        agent = Agent(env=env, tag=str(domain_name)+'-'+str(tag)+'{0}'.format("%02d" % instance))
         p = agent.train()
+
+        
 
         d = self.ms.evaluate_sensor_on_traces(traces, sp.parse_sensor(modelSensor))
         a = self.ms.evaluate_sensor_on_traces(traces, p.compile())
@@ -58,7 +60,7 @@ def rl_generate(domain_filename, domain_name, instance, problem_filename, traces
     print("Simple sensor:", simple_sensor)
     rl = RL()
     tpr, tnr, fpr, fnr = 0, 0, 0, 0
-    tpr, tnr, fpr, fnr = rl.build_sensor(pp.domain, domain_name, instance, simple_sensor, traces, terms, sensorDepth=sensor_depth)
+    tpr, tnr, fpr, fnr = rl.build_sensor(pp.domain, domain_name, instance, simple_sensor, traces, terms, sensorDepth=sensor_depth, tag="ss")
 
     ss_stats[0] = [instance,
                        len(pp.domain.all_facts),
@@ -69,7 +71,7 @@ def rl_generate(domain_filename, domain_name, instance, problem_filename, traces
 
     # Saving files in the middle of the loop in case of process kills
     print("Writing stats to ", domain_name + "-ss{0}.txt".format("%02d" % instance))
-    np.savetxt(domain_name + "-ss{0}.txt".format("%02d" % instance), ss_stats,
+    np.savetxt('rl/output/' + domain_name + "-ss{0}.txt".format("%02d" % instance), ss_stats,
                fmt='%d %d %d %d %d %.4f %.4f %.4f %.4f', delimiter=" ", newline="\n",
                header="Index, #Predicates, #Actions, #States, #Traces, TPR, TNR, FPR, FNR", footer="", comments="")
 
@@ -84,7 +86,7 @@ def rl_generate(domain_filename, domain_name, instance, problem_filename, traces
     print("Complex sensor:", complex_sensor)
     rl = RL()
     tpr, tnr, fpr, fnr = 0, 0, 0, 0
-    tpr, tnr, fpr, fnr = rl.build_sensor(pp.domain, domain_name, instance, complex_sensor, traces, terms, sensorDepth=sensor_depth)
+    tpr, tnr, fpr, fnr = rl.build_sensor(pp.domain, domain_name, instance, complex_sensor, traces, terms, sensorDepth=sensor_depth, tag="cs")
 
     cs_stats[0] = [instance,
                        len(pp.domain.all_facts),
@@ -95,7 +97,7 @@ def rl_generate(domain_filename, domain_name, instance, problem_filename, traces
 
     # Saving files in the middle of the loop in case of process kills
     print("Writing stats to " + domain_name + "-cs{0}.txt".format("%02d" % instance))
-    np.savetxt(domain_name + "-cs{0}.txt".format("%02d" % instance), cs_stats,
+    np.savetxt('rl/output/' + domain_name + "-cs{0}.txt".format("%02d" % instance), cs_stats,
                fmt='%d %d %d %d %d %.4f %.4f %.4f %.4f', delimiter=" ", newline="\n",
                header="Index, #Predicates, #Actions, #States, #Traces, TPR, TNR, FPR, FNR", footer="", comments="")
 
@@ -103,7 +105,7 @@ def rl_generate(domain_filename, domain_name, instance, problem_filename, traces
     print("Action sensor:", action_sensor)
     rl = RL()
     tpr, tnr, fpr, fnr = 0, 0, 0, 0
-    tpr, tnr, fpr, fnr = rl.build_sensor(pp.domain, domain_name, instance, action_sensor, traces, terms, sensorDepth=sensor_depth)
+    tpr, tnr, fpr, fnr = rl.build_sensor(pp.domain, domain_name, instance, action_sensor, traces, terms, sensorDepth=sensor_depth, tag="as")
 
     as_stats[0] = [instance,
                    len(pp.domain.all_facts),
@@ -114,7 +116,7 @@ def rl_generate(domain_filename, domain_name, instance, problem_filename, traces
 
     # Saving files in the middle of the loop in case of process kills
     print("Writing stats to ", domain_name + "-as{0}.txt".format("%02d" % instance))
-    np.savetxt(domain_name + "-as{0}.txt".format("%02d" % instance), as_stats,
+    np.savetxt('rl/output/' + domain_name + "-as{0}.txt".format("%02d" % instance), as_stats,
                fmt='%d %d %d %d %d %.4f %.4f %.4f %.4f', delimiter=" ", newline="\n",
                header="Index, #Predicates, #Actions, #States, #Traces, TPR, TNR, FPR, FNR", footer="", comments="")
 

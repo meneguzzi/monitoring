@@ -7,7 +7,7 @@ import pickle
 
 class Environment():
     
-    def __init__(self, domain_name, instance, ng, modelSensor, traces, ms):
+    def __init__(self, domain_name, instance, tag, ng, modelSensor, traces, ms):
         # Nir's stuff
         self.traces = traces
         self.modelSensor = modelSensor
@@ -30,7 +30,7 @@ class Environment():
 
         # History
         self.history = []
-        self.history_filename = 'rl/output/'+str(domain_name)+'-'+str(instance)+'.pkl'
+        self.history_filename = 'rl/output/' + str(domain_name) + '-' + str(tag) + '{0}'.format("%02d" % instance) + '-history.pkl'
         if not os.path.exists('rl/output/'):
             os.makedirs('rl/output')
 

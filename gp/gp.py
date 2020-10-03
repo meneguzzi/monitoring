@@ -19,12 +19,12 @@ class GP(object):
 
 
     def build_sensor(self, domain, domain_name, instance, modelSensor, traces, terms, popSize=100, nGens=100, 
-                    reproducePercent=0.8,mutatePercent=0.05,crossOverPercent=0.1, sensorDepth=1):
+                    reproducePercent=0.8,mutatePercent=0.05,crossOverPercent=0.1, sensorDepth=1, tag=None):
         ng = NodeGenerator(terms, 1, 5, 2, 5)
         gpo = GPOps(terms, 1, 5, 1, 4)
         sp = Sensor_Parser()
 
-        pop = Population(domain_name, instance, popSize, ng, reproducePercent, mutatePercent, crossOverPercent, gpo, sp.parse_sensor(modelSensor), traces, self.ms)
+        pop = Population(domain_name, instance, popSize, ng, reproducePercent, mutatePercent, crossOverPercent, gpo, sp.parse_sensor(modelSensor), traces, self.ms, tag)
 
         for i in range(0, nGens):
             if self.verbose: print "g", i
@@ -81,7 +81,7 @@ def gp_generate(domain_filename, domain_name, instance, problem_filename, traces
     print "Simple sensor: " + simple_sensor
     gp = GP(True)
     tpr, tnr, fpr, fnr = 0, 0, 0, 0
-    tpr, tnr, fpr, fnr = gp.build_sensor(pp.domain, domain_name, instance, simple_sensor, traces, terms, popSize, nGens, sensorDepth=sensor_depth)
+    tpr, tnr, fpr, fnr = gp.build_sensor(pp.domain, domain_name, instance, simple_sensor, traces, terms, popSize, nGens, sensorDepth=sensor_depth, tag="ss")
 
     ss_stats[0] = [instance,
                        len(pp.domain.all_facts),
@@ -92,7 +92,7 @@ def gp_generate(domain_filename, domain_name, instance, problem_filename, traces
 
     # Saving files in the middle of the loop in case of process kills
     print "Writing stats to ", domain_name + "-ss{0}.txt".format("%02d" % instance)
-    np.savetxt(domain_name + "-ss{0}.txt".format("%02d" % instance), ss_stats,
+    np.savetxt('gp/output/' + domain_name + "-ss{0}.txt".format("%02d" % instance), ss_stats,
                fmt='%d %d %d %d %d %.4f %.4f %.4f %.4f', delimiter=" ", newline="\n",
                header="Index, #Predicates, #Actions, #States, #Traces, TPR, TNR, FPR, FNR", footer="", comments="")
 
@@ -107,7 +107,7 @@ def gp_generate(domain_filename, domain_name, instance, problem_filename, traces
     print "Complex sensor: " + complex_sensor
     gp = GP(True)
     tpr, tnr, fpr, fnr = 0, 0, 0, 0
-    tpr, tnr, fpr, fnr = gp.build_sensor(pp.domain, domain_name, instance, complex_sensor, traces, terms, popSize, nGens, sensorDepth=sensor_depth)
+    tpr, tnr, fpr, fnr = gp.build_sensor(pp.domain, domain_name, instance, complex_sensor, traces, terms, popSize, nGens, sensorDepth=sensor_depth, tag="cs")
 
     cs_stats[0] = [instance,
                        len(pp.domain.all_facts),
@@ -118,7 +118,7 @@ def gp_generate(domain_filename, domain_name, instance, problem_filename, traces
 
     # Saving files in the middle of the loop in case of process kills
     print "Writing stats to ", domain_name + "-cs{0}.txt".format("%02d" % instance)
-    np.savetxt(domain_name + "-cs{0}.txt".format("%02d" % instance), cs_stats,
+    np.savetxt('gp/output/' + domain_name + "-cs{0}.txt".format("%02d" % instance), cs_stats,
                fmt='%d %d %d %d %d %.4f %.4f %.4f %.4f', delimiter=" ", newline="\n",
                header="Index, #Predicates, #Actions, #States, #Traces, TPR, TNR, FPR, FNR", footer="", comments="")
 
@@ -126,7 +126,7 @@ def gp_generate(domain_filename, domain_name, instance, problem_filename, traces
     print "Action sensor: " + action_sensor
     gp = GP(True)
     tpr, tnr, fpr, fnr = 0, 0, 0, 0
-    tpr, tnr, fpr, fnr = gp.build_sensor(pp.domain, domain_name, instance, action_sensor, traces, terms, popSize, nGens, sensorDepth=sensor_depth)
+    tpr, tnr, fpr, fnr = gp.build_sensor(pp.domain, domain_name, instance, action_sensor, traces, terms, popSize, nGens, sensorDepth=sensor_depth, tag="as")
 
     as_stats[0] = [instance,
                    len(pp.domain.all_facts),
@@ -137,7 +137,7 @@ def gp_generate(domain_filename, domain_name, instance, problem_filename, traces
 
     # Saving files in the middle of the loop in case of process kills
     print "Writing stats to ", domain_name + "-as{0}.txt".format("%02d" % instance)
-    np.savetxt(domain_name + "-as{0}.txt".format("%02d" % instance), as_stats,
+    np.savetxt('gp/output/' + domain_name + "-as{0}.txt".format("%02d" % instance), as_stats,
                fmt='%d %d %d %d %d %.4f %.4f %.4f %.4f', delimiter=" ", newline="\n",
                header="Index, #Predicates, #Actions, #States, #Traces, TPR, TNR, FPR, FNR", footer="", comments="")
 
