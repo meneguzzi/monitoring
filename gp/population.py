@@ -9,7 +9,7 @@ import pickle
 
 class Population:
   """ng is the initial population generator"""
-  def __init__(self,domain_name,instance,num,ng,reproducePercent,mutatePercent,crossOverPercent,gpOps,modelSensor,traces, mp=MonitorSynthesizer(), tag):
+  def __init__(self,domain_name,instance,num,ng,reproducePercent,mutatePercent,crossOverPercent,gpOps,modelSensor,traces, mp=MonitorSynthesizer(), tag=None):
     self.num=num
     self.ng=ng
     self.pop=[]
