@@ -7,14 +7,7 @@ echo "### Started monitoring simulation ###"
 STARTTIME=$(date +%s)
 
 echo "Running experiments for BTW domain..."
-(python2.7 gp/gp.py barter-world 1 ; python2.7 gp/gp.py barter-world 2) &
-(python2.7 gp/gp.py barter-world 3 ; python2.7 gp/gp.py barter-world 4) &
-(python2.7 gp/gp.py barter-world 5)
-
-echo "Running experiments for BD domain..."
-(python2.7 gp/gp.py bridges 1 ; python2.7 gp/gp.py bridges 2) &
-(python2.7 gp/gp.py bridges 3 ; python2.7 gp/gp.py bridges 4) &
-(python2.7 gp/gp.py bridges 5)
+python2.7 gp/gp.py barter-world 3
 
 ENDTIME=$(date +%s)
 
