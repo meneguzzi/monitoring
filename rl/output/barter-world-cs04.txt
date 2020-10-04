@@ -1,0 +1,2 @@
+Index, #Predicates, #Actions, #States, #Traces, TPR, TNR, FPR, FNR
+4 16 282 65536 1001 0.4376 0.3307 0.1818 0.0500

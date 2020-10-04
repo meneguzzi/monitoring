@@ -13,7 +13,7 @@ def main():
     sensor_depth = 3
 
     domain_names = ['tpp']  #['barter-world', 'bridges', 'psr-small', 'tpp']
-    instances = [3,4,5]  #[1, 2, 3, 4, 5]
+    instances = [4]  #[1, 2, 3, 4, 5]
 
     # Iterate each domain and problem
     for domain_name in domain_names:
