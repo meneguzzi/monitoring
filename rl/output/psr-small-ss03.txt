@@ -1,0 +1,2 @@
+Index, #Predicates, #Actions, #States, #Traces, TPR, TNR, FPR, FNR
+3 18 22 262144 1000 0.9700 0.0000 0.0300 0.0000

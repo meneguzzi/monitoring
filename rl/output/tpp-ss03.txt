@@ -1,0 +1,2 @@
+Index, #Predicates, #Actions, #States, #Traces, TPR, TNR, FPR, FNR
+3 26 11 67108864 1000 0.8950 0.0000 0.1050 0.0000
