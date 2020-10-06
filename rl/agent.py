@@ -57,14 +57,14 @@ class Agent:
 
         # Training
         self.num_episodes = 10000  # 10k
-        self.memory_size = 1024
+        self.memory_size = 2048
         self.memory = ReplayMemory(self.memory_size)
-        self.batch_size = 256
+        self.batch_size = 512
 
         # Epsilon
         self.epsilon = 1
         self.epsilon_min = 0.0  # 0%
-        self.epsilon_decay = 0.01  # 1%
+        self.epsilon_decay = 0.005  # 0.5%
 
         # Log
         if output_path == None:
