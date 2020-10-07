@@ -23,8 +23,6 @@ class RL(object):
         agent = Agent(env=env, tag=str(domain_name)+'-'+str(tag)+'{0}'.format("%02d" % instance))
         p = agent.train()
 
-        
-
         d = self.ms.evaluate_sensor_on_traces(traces, sp.parse_sensor(modelSensor))
         a = self.ms.evaluate_sensor_on_traces(traces, p.compile())
 
